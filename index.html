@@ -81,8 +81,7 @@ const RAW = [
   ["rana-iwase","Rana Iwase","https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=2172","Rana Iwase.webp"],
   ["nasuzu-koyama","Nasuzu Koyama","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=596","Nasuzu Koyama.webp"],
   ["kaworu-hayashi","Kaworu Hayashi","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=2265","Kaworu Hayashi.webp"],
-  ["kaaya-yoneyama","Kaaya Yoneyama","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=3769","Kaaya Yoneyama.png"]
-];
+  ["kaaya-yoneyama","Kaaya Yoneyama","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=3769","Kaaya Yoneyama.png"]];
 
 const DETAILS = {
   "aimi-horinouchi": {"age": "18","height": "153 cm","birthday": "August 15, 2006","zodiac": "Leo","bloodType": "B","mbti": "ESFP-T","from": "Yamanashi"},
@@ -112,7 +111,39 @@ const DETAILS = {
   "ruka-sato": {"age": "19","height": "152 cm","birthday": "August 4, 2006","zodiac": "Leo","bloodType": "AB","mbti": "ESFP","from": "Tokyo"},
   "ruri-enomoto": {"age": "21","height": "160 cm","birthday": "January 20, 2004","zodiac": "Aquarius","bloodType": "O","mbti": "ENFP","from": "Osaka"},
   "yu-seto": {"age": "21","height": "152 cm","birthday": "May 15, 2004","zodiac": "Taurus","bloodType": "O","mbti": "ISFP","from": "Shizuoka"},
-  "saaya-takaki": {"age": "20","height": "161 cm","birthday": "April 5, 2005","zodiac": "Aries","bloodType": "B","mbti": "ESFP","from": "Osaka"}
+  "saaya-takaki": {"age": "20","height": "161 cm","birthday": "April 5, 2005","zodiac": "Aries","bloodType": "B","mbti": "ESFP","from": "Osaka"}};
+
+const NAME_TO_URL = {
+  "Reika Takeuchi": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_9f08b950-6bcf-4a1e-b0ee-9861d64d6c66.webp",
+  "Nikao Furuse": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_247b39a6-0f8b-4a5b-83ca-41cec4a6bde6.webp",
+  "Kaede Mori": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_59c31b13-9334-4efe-918e-94b27c8d6ef5.webp",
+  "Kohime Nozaki": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_f9eac80c-0aed-4e22-9a57-3d1c3467adc1.webp",
+  "Aimi Sato": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_e8eac992-dbc1-40c3-b193-46c7e80a1c5c.webp",
+  "Mimi Ueki": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_df114956-a8e4-41ac-9722-f69cfa3fca82.webp",
+  "Ruri Enomoto": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_96476fa4-b46c-4f23-834e-71b91d27516d.webp",
+  "Aimi Horinouchi": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_32e30ae8-ac09-4560-9d2b-726b561d9a38.webp",
+  "Karen Otsubo": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_5555ed52-8906-4b62-b8e6-db245c134e25.webp",
+  "Fuka Nagaike": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_89f3dba7-90e2-4f33-ab0e-218cc94cd877.webp",
+  "Aira Shikano": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_a8df4302-0a98-4f74-94c4-072a21750c97.webp",
+  "Mao Saito": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_ad91aea3-008c-4f63-9dec-9fe0192d3fcf.webp",
+  "Choko Yoshida": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_719aca00-0ed6-4b59-805b-5544538ca1fd.webp",
+  "Ruka Sato": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_7e9ee581-ced9-4e38-9766-51e87475f831.webp",
+  "Miyabi Yamamoto": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_d9014b31-1d9c-460a-89a7-d6cbb2d30fcf.webp",
+  "Ren Kawakita": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_d7de4d58-6f66-4713-a5dc-f4e8514488f8.webp",
+  "Miyuu Sato": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_dda7db5b-4a8b-42f8-af18-dbb381f3ae37.webp",
+  "Yu Seto": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_6ea0baf9-fbfb-4f4f-8c51-5a85837b6e54.webp",
+  "Moka Kawaguchi": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_054c291b-ebc8-4ec1-94d5-5ab3b2ebc570.webp",
+  "Aimi Inuzuka": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_0f51d9df-6e1a-4aab-ba96-e349fd8e17b2.webp",
+  "Nana Hashimoto": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_7018065b-10e5-4042-a567-8762e1ac53b3.webp",
+  "Saaya Takaki": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_c10f4c71-415c-4bdd-bff1-aa7f6e7d302a.webp",
+  "Neiro Tanaka": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_4a5a41b9-a911-4cc7-814c-f3fbd2c239be.webp",
+  "Haruka Kakutani": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_f368f1a8-0d56-461d-b505-1a07189b13ee.webp",
+  "Rana Iwase": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_085f717c-c381-4235-8847-0d67efe6845d.webp",
+  "Nasuzu Koyama": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_daeec277-0db3-436a-8c11-70d8ddd77eb5.webp",
+  "Kaworu Hayashi": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_0e246f96-bb81-472d-a7cf-d848bedd0329.webp",
+  "Kaaya Yoneyama": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_65fba89b-7f50-4f64-9479-44cffcf63ea3.webp",
+  "Amane Yunoki": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_56fb74eb-2627-45ef-8928-d4c854e752c1.webp",
+  "Aris Kawamatsu": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_f90f4062-06b3-45ba-a1bd-d89c84a156d6.webp"
 };
 
 const imgSrc = (filename) => 'profile-pictures/' + encodeURIComponent(filename);
@@ -324,7 +355,7 @@ function card(c, side, bracketType) {
       <h2 class="title">${c.name}</h2>
       <div class="profile">
         <div class="square">
-          <img class="avatar" alt="${c.name}" src="${imgSrc(c.filename)}"/>
+          <img class="avatar" alt="${c.name}" src="${NAME_TO_URL[c.name] || imgSrc(c.filename)}"/>
         </div>
         <div class="details">
           ${row('From', c.details.from)}
@@ -401,7 +432,7 @@ function renderFinalResults() {
   const cardP = (who, cls, rank) => who ? `
     <div class="${cls}">
       <div class="rank-badge">#${rank} ${rank === 1 ? 'Winner <span class="crown">👑</span>' : ''}</div>
-      <img class="avatar" alt="${who.name}" src="${imgSrc(who.filename)}"/>
+      <img class="avatar" alt="${who.name}" src="${NAME_TO_URL[who.name] || imgSrc(who.filename)}"/>
       <div style="font-weight:800;margin-top:6px">${who.name}</div>
     </div>` : '';
   
@@ -410,7 +441,7 @@ function renderFinalResults() {
     const rank = i + 4;
     return `<div class="place-card">
       <div class="title-center">#${rank} ${c.name}</div>
-      <img class="avatar" alt="${c.name}" src="${imgSrc(c.filename)}"/>
+      <img class="avatar" alt="${c.name}" src="${NAME_TO_URL[c.name] || imgSrc(c.filename)}"/>
     </div>`;
   }).join('');
   
