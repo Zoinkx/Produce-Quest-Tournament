@@ -5,54 +5,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Produce Quest - Tournament</title>
   <meta name="referrer" content="no-referrer-when-downgrade">
-  <style>
-    :root{ --bg1:#fce3ec; --bg2:#ffe9e9; --bg3:#fefcfd; --primary:#ff8c94; --accent:#ffb3c1; --text:#4a4a4a; }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--text)}
-    body{background:linear-gradient(135deg,var(--bg1) 0%, var(--bg2) 50%, var(--bg3) 100%);min-height:100vh;display:flex;flex-direction:column}
-    .container{max-width:1200px;margin:0 auto;padding:16px}
-    .row{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;align-items:stretch}
-    .col{flex:1 1 520px;max-width:560px}
-    .card{background:#fff;border:2px solid var(--accent);border-radius:14px;box-shadow:0 10px 30px rgba(255,179,193,.4);padding:22px}
-    .title{font-size:28px;font-weight:800;color:var(--primary);text-align:center;margin:0 0 14px}
-    .profile{display:grid;grid-template-columns:.9fr 2.6fr;gap:18px}
-    @media (max-width: 768px){.profile{grid-template-columns:1fr}}
-    .square{height:100%;aspect-ratio:1/1}
-    .avatar{width:100%;height:100%;object-fit:contain;background:transparent}
-    .details{background:#fff7f9;border-radius:10px;padding:12px;box-shadow:inset 0 1px 4px rgba(0,0,0,.06)}
-    .details p{display:flex;justify-content:space-between;margin:6px 0;font-size:14px}
-    .video{position:relative;width:100%;padding-bottom:56.25%;border-radius:12px;overflow:hidden;box-shadow:0 4px 10px rgba(0,0,0,.1);margin-top:16px;margin-bottom:16px}
-    .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-    .btn{width:100%;margin-top:12px;background:linear-gradient(90deg,var(--primary) 0%, var(--accent) 100%);color:#fff;font-weight:800;border:none;border-radius:12px;padding:12px 16px;cursor:pointer;box-shadow:0 4px 15px rgba(255,140,148,.5);transition:transform .12s ease, filter .12s ease, box-shadow .12s ease;will-change:transform}
-    .btn:hover{transform:scale(1.035);filter:hue-rotate(-8deg) saturate(1.05);box-shadow:0 6px 18px rgba(255,140,148,.55)}
-    .header{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-    .progress{width:100%;height:10px;border-radius:999px;background:#eee;overflow:hidden}
-    .progress>div{height:100%;background:var(--accent);width:0;transition:width .4s}
-    .bracket-badge{display:inline-block;padding:4px 10px;border-radius:8px;font-size:13px;font-weight:700;margin-left:8px}
-    .winners-badge{background:#ffd700;color:#8b6914}
-    .losers-badge{background:#c0c0c0;color:#555}
-    .vs{align-self:stretch;min-width:72px;display:flex;align-items:center;justify-content:center;padding:0 8px;font-size:38px;font-weight:900;color:var(--primary)}
-    .reset{width:auto;padding:10px 16px;position:fixed;right:16px;bottom:16px;z-index:999;border-radius:999px}
-    @media (max-width: 768px){.vs{min-height:48px;margin:8px 0}}
-    .placements-wrap{display:flex;flex-direction:column;gap:24px;align-items:center}
-    .champ-wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:end}
-    .champ, .runner, .third{background:#fff;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.08);text-align:center;transition:transform .12s ease, box-shadow .12s ease}
-    .champ{border:4px solid #d4af37}
-    .runner{border:3px solid #c0c0c0}
-    .third{border:3px solid #cd7f32}
-    .champ:hover, .runner:hover, .third:hover{transform:scale(1.06);box-shadow:0 12px 28px rgba(0,0,0,.12)}
-    .champ .avatar{max-width:242px}
-    .runner .avatar, .third .avatar{max-width:170px}
-    .rank-badge{font-weight:900;color:#ff8c94;margin-bottom:8px}
-    .crown{font-size:28px;margin-left:6px}
-    .list-wrap{max-width:408px;width:100%;display:flex;flex-direction:column;gap:10px}
-    .place-card{display:flex;justify-content:space-between;align-items:center;background:#fff;border:2px solid #ffd6df;border-radius:14px;padding:8px 12px;box-shadow:0 4px 12px rgba(0,0,0,.06);transition:transform .15s ease, box-shadow .15s ease;min-height:54px;overflow:visible}
-    .place-card:hover{transform:scale(1.5);box-shadow:0 10px 24px rgba(0,0,0,.12)}
-    .place-card .avatar{width:68px;height:68px;object-fit:contain;position:relative;z-index:1}
-    .place-card .title-center{flex:1;text-align:center;font-weight:900;font-size:1.05rem}
-    .hide{display:none !important}
-  </style>
+<style>
+  :root{ --bg1:#fce3ec; --bg2:#ffe9e9; --bg3:#fefcfd; --primary:#ff8c94; --accent:#ffb3c1; --text:#4a4a4a; }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--text)}
+  body{background:linear-gradient(135deg,var(--bg1) 0%, var(--bg2) 50%, var(--bg3) 100%);min-height:100vh;display:flex;flex-direction:column}
+
+  /* --- scaling wrapper: keeps 1920x baseline look, scales proportionally --- */
+  #scale-outer{position:relative; width:100%; display:grid; justify-items:center; align-items:start; padding:8px 0;}
+  #scale-inner{width:1200px; transform-origin: top center; will-change:transform;}
+
+  .container{max-width:1200px;margin:0 auto;padding:16px}
+  .row{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;align-items:stretch}
+  .col{flex:1 1 520px;max-width:560px}
+  .card{background:#fff;border:2px solid var(--accent);border-radius:14px;box-shadow:0 10px 30px rgba(255,179,193,.4);padding:22px}
+  .title{font-size:28px;font-weight:800;color:var(--primary);text-align:center;margin:0 0 14px}
+  .profile{display:grid;grid-template-columns:.9fr 2.6fr;gap:18px}
+  @media (max-width: 768px){.profile{grid-template-columns:1fr}}
+  .square{height:100%;aspect-ratio:1/1}
+  .avatar{width:100%;height:100%;object-fit:contain;background:transparent}
+  .details{background:#fff7f9;border-radius:10px;padding:12px;box-shadow:inset 0 1px 4px rgba(0,0,0,.06)}
+  .details p{display:flex;justify-content:space-between;margin:6px 0;font-size:14px}
+  .video{position:relative;width:100%;padding-bottom:56.25%;border-radius:12px;overflow:hidden;box-shadow:0 4px 10px rgba(0,0,0,.1);margin-top:16px;margin-bottom:16px}
+  .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .btn{width:100%;margin-top:12px;background:linear-gradient(90deg,var(--primary) 0%, var(--accent) 100%);color:#fff;font-weight:800;border:none;border-radius:12px;padding:12px 16px;cursor:pointer;box-shadow:0 4px 15px rgba(255,140,148,.5);transition:transform .12s ease, filter .12s ease, box-shadow .12s ease;will-change:transform}
+  .btn:hover{transform:scale(1.035);filter:hue-rotate(-8deg) saturate(1.05);box-shadow:0 6px 18px rgba(255,140,148,.55)}
+
+  /* ===== Softer progress bar container ===== */
+  .header{background:transparent;box-shadow:none}
+  .header .container{
+    background: linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,245,248,0.85));
+    border: 1px solid #ffd6df;
+    border-radius: 16px;
+    padding: 10px 14px;
+    box-shadow: 0 6px 20px rgba(255,140,148,0.20);
+    backdrop-filter: blur(6px);
+  }
+
+  /* Track + fill */
+  .progress{width:100%;height:14px;border-radius:999px;background:rgba(255,224,233,0.7);box-shadow:inset 0 2px 6px rgba(0,0,0,0.08);overflow:hidden}
+  .progress>div{height:100%;border-radius:inherit;background:linear-gradient(90deg,#ff8c94,#ffb3c1);box-shadow:0 2px 8px rgba(255,140,148,0.35);width:0;transition:width .35s ease}
+
+  .bracket-badge{display:inline-block;padding:4px 10px;border-radius:8px;font-size:13px;font-weight:700;margin-left:8px}
+  .winners-badge{background:#ffd700;color:#8b6914}
+  .losers-badge{background:#c0c0c0;color:#555}
+  .vs{align-self:stretch;min-width:72px;display:flex;align-items:center;justify-content:center;padding:0 8px;font-size:38px;font-weight:900;color:var(--primary)}
+  .reset{width:auto;padding:10px 16px;position:fixed;right:16px;bottom:16px;z-index:999;border-radius:999px}
+  @media (max-width: 768px){.vs{min-height:48px;margin:8px 0}}
+  .placements-wrap{display:flex;flex-direction:column;gap:24px;align-items:center}
+  .champ-wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:end}
+  .champ, .runner, .third{background:#fff;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.08);text-align:center;transition:transform .12s ease, box-shadow .12s ease}
+  .champ{border:4px solid #d4af37}
+  .runner{border:3px solid #c0c0c0}
+  .third{border:3px solid #cd7f32}
+  .champ:hover, .runner:hover, .third:hover{transform:scale(1.06);box-shadow:0 12px 28px rgba(0,0,0,.12)}
+  .champ .avatar{max-width:242px}
+  .runner .avatar, .third .avatar{max-width:170px}
+  .rank-badge{font-weight:900;color:#ff8c94;margin-bottom:8px}
+  .crown{font-size:28px;margin-left:6px}
+  .list-wrap{max-width:408px;width:100%;display:flex;flex-direction:column;gap:10px}
+  .place-card{display:flex;justify-content:space-between;align-items:center;background:#fff;border:2px solid #ffd6df;border-radius:14px;padding:8px 12px;box-shadow:0 4px 12px rgba(0,0,0,.06);transition:transform .15s ease, box-shadow .15s ease;min-height:54px;overflow:visible}
+  .place-card:hover{transform:scale(1.5);box-shadow:0 10px 24px rgba(0,0,0,.12)}
+  .place-card .avatar{width:68px;height:68px;object-fit:contain;position:relative;z-index:1}
+  .place-card .title-center{flex:1;text-align:center;font-weight:900;font-size:1.05rem}
+  .hide{display:none !important}
+</style>
   <script>
+/* ---------- DATA ---------- */
 const RAW = [
   ["reika-takeuchi","Reika Takeuchi","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=3064","Reika Takeuchi.webp"],
   ["nikao-furuse","Nikao Furuse","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=2556","Nikao Furuse.webp"],
@@ -81,7 +100,11 @@ const RAW = [
   ["rana-iwase","Rana Iwase","https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=2172","Rana Iwase.webp"],
   ["nasuzu-koyama","Nasuzu Koyama","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=596","Nasuzu Koyama.webp"],
   ["kaworu-hayashi","Kaworu Hayashi","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=2265","Kaworu Hayashi.webp"],
-  ["kaaya-yoneyama","Kaaya Yoneyama","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=3769","Kaaya Yoneyama.png"]];
+  ["kaaya-yoneyama","Kaaya Yoneyama","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=3769","Kaaya Yoneyama.png"],
+  /* added */
+  ["amane-yunoki","Amane Yunoki","about:blank","Amane Yunoki.png"],
+  ["aris-kawamatsu","Aris Kawamatsu","about:blank","Aris Kawamatsu.webp"]
+];
 
 const DETAILS = {
   "aimi-horinouchi": {"age": "18","height": "153 cm","birthday": "August 15, 2006","zodiac": "Leo","bloodType": "B","mbti": "ESFP-T","from": "Yamanashi"},
@@ -111,7 +134,11 @@ const DETAILS = {
   "ruka-sato": {"age": "19","height": "152 cm","birthday": "August 4, 2006","zodiac": "Leo","bloodType": "AB","mbti": "ESFP","from": "Tokyo"},
   "ruri-enomoto": {"age": "21","height": "160 cm","birthday": "January 20, 2004","zodiac": "Aquarius","bloodType": "O","mbti": "ENFP","from": "Osaka"},
   "yu-seto": {"age": "21","height": "152 cm","birthday": "May 15, 2004","zodiac": "Taurus","bloodType": "O","mbti": "ISFP","from": "Shizuoka"},
-  "saaya-takaki": {"age": "20","height": "161 cm","birthday": "April 5, 2005","zodiac": "Aries","bloodType": "B","mbti": "ESFP","from": "Osaka"}};
+  "saaya-takaki": {"age": "20","height": "161 cm","birthday": "April 5, 2005","zodiac": "Aries","bloodType": "B","mbti": "ESFP","from": "Osaka"},
+  /* added */
+  "amane-yunoki": {"age": "22","height": "155 cm","birthday": "February 19, 2003","zodiac": "Pisces","bloodType": "A","mbti": "INFP","from": "Saga"},
+  "aris-kawamatsu": {"age": "—","height": "148 cm","birthday": "November 26, 2008","zodiac": "Sagittarius","bloodType": "B","mbti": "ISFP","from": "—"}
+};
 
 const NAME_TO_URL = {
   "Reika Takeuchi": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_9f08b950-6bcf-4a1e-b0ee-9861d64d6c66.webp",
@@ -152,6 +179,7 @@ RAW.forEach(([id,name,embedSrc,filename]) => {
   CONTESTANTS[id] = { id, name, filename, details: DETAILS[id] || {}, video: { embedUrl: embedSrc } };
 });
 
+/* ---------- STATE + LOGIC ---------- */
 const STATE_KEY = 'bracket_double_elim_v2';
 let state = null;
 
@@ -165,25 +193,23 @@ function shuffle(arr) {
 function initState() {
   const ids = Object.keys(CONTESTANTS);
   shuffle(ids);
-  
-  // Create queue-based system
+
   state = {
     winnersQueue: [...ids],
     losersQueue: [],
-    pendingLosers: [], // Losers waiting to enter losers bracket
+    pendingLosers: [],
     eliminated: [],
     totalMatches: 0,
     currentBracket: 'winners',
     grandFinals: null,
     bracketReset: false
   };
-  
-  // Pad winners queue to power of 2 with nulls (BYEs)
+
   const nextPowerOf2 = Math.pow(2, Math.ceil(Math.log2(state.winnersQueue.length)));
   while (state.winnersQueue.length < nextPowerOf2) {
     state.winnersQueue.push(null);
   }
-  
+
   save();
 }
 
@@ -204,144 +230,78 @@ function load() {
 }
 
 function getTotalMatches() {
-  // Calculate actual matches needed for double elimination
-  // In double elim, each person must lose twice except the winner
   const n = Object.keys(CONTESTANTS).length;
-  // Upper bound: everyone loses twice except winner = 2(n-1) matches
-  // But some BYEs reduce this slightly
   const nextPowerOf2 = Math.pow(2, Math.ceil(Math.log2(n)));
   const byesNeeded = nextPowerOf2 - n;
-  // Approximate: (2n - 2) - some BYEs
   return (2 * n) - 2 - Math.floor(byesNeeded / 2);
 }
 
 function getCurrentMatch() {
-  // Grand finals
-  if (state.grandFinals) {
-    return {
-      bracket: 'grand',
-      a: state.grandFinals.a,
-      b: state.grandFinals.b
-    };
-  }
-  
-  // Winners bracket
+  if (state.grandFinals) return { bracket: 'grand', a: state.grandFinals.a, b: state.grandFinals.b };
   if (state.currentBracket === 'winners' && state.winnersQueue.length >= 2) {
-    return {
-      bracket: 'winners',
-      a: state.winnersQueue[0],
-      b: state.winnersQueue[1]
-    };
+    return { bracket: 'winners', a: state.winnersQueue[0], b: state.winnersQueue[1] };
   }
-  
-  // Losers bracket
   if (state.currentBracket === 'losers' && state.losersQueue.length >= 2) {
-    return {
-      bracket: 'losers',
-      a: state.losersQueue[0],
-      b: state.losersQueue[1]
-    };
+    return { bracket: 'losers', a: state.losersQueue[0], b: state.losersQueue[1] };
   }
-  
   return null;
 }
 
 function choose(winnerId) {
   const match = getCurrentMatch();
   if (!match) return;
-  
+
   const loserId = winnerId === match.a ? match.b : match.a;
-  
-  // Only increment for real matches (not BYEs)
-  if (loserId !== null) {
-    state.totalMatches++;
-  }
-  
-  // Grand finals
+  if (loserId !== null) state.totalMatches++;
+
   if (match.bracket === 'grand') {
     if (winnerId === state.grandFinals.b && !state.bracketReset) {
-      // Bracket reset! Losers champ won first match
       state.bracketReset = true;
-      save();
-      render();
-      return;
+      save(); render(); return;
     }
-    
-    // Tournament complete
     state.eliminated.push(loserId);
     state.eliminated.push(winnerId);
-    save();
-    render();
-    return;
+    save(); render(); return;
   }
-  
-  // Winners bracket
+
   if (match.bracket === 'winners') {
-    state.winnersQueue.shift(); // Remove player A
-    state.winnersQueue.shift(); // Remove player B
-    
-    if (loserId) {
-      state.pendingLosers.push(loserId); // Loser drops to losers bracket
-    }
-    
-    state.winnersQueue.push(winnerId); // Winner goes to back of winners queue
-    
-    // Check if winners bracket round complete
+    state.winnersQueue.shift();
+    state.winnersQueue.shift();
+    if (loserId) state.pendingLosers.push(loserId);
+    state.winnersQueue.push(winnerId);
+
     if (state.winnersQueue.length === 1) {
-      // Winners champion! Switch to losers bracket
       state.currentBracket = 'losers';
-      
-      // Merge pending losers into losers queue
       if (state.pendingLosers.length > 0) {
         state.losersQueue.push(...state.pendingLosers);
         state.pendingLosers = [];
       }
     } else if (state.winnersQueue.length === 0 || (state.winnersQueue.length === 1 && state.losersQueue.length === 1)) {
-      // Time for grand finals
-      state.grandFinals = {
-        a: state.winnersQueue[0],
-        b: state.losersQueue[0]
-      };
+      state.grandFinals = { a: state.winnersQueue[0], b: state.losersQueue[0] };
       state.winnersQueue = [];
       state.losersQueue = [];
     }
-  }
-  // Losers bracket
-  else if (match.bracket === 'losers') {
-    state.losersQueue.shift(); // Remove player A
-    state.losersQueue.shift(); // Remove player B
-    
-    if (loserId) {
-      state.eliminated.push(loserId); // Loser is eliminated (2nd loss)
-    }
-    
-    state.losersQueue.push(winnerId); // Winner stays in losers bracket
-    
-    // Check if we need to merge more losers from winners
+  } else if (match.bracket === 'losers') {
+    state.losersQueue.shift();
+    state.losersQueue.shift();
+    if (loserId) state.eliminated.push(loserId);
+    state.losersQueue.push(winnerId);
+
     if (state.losersQueue.length === 0 && state.pendingLosers.length > 0) {
       state.losersQueue.push(...state.pendingLosers);
       state.pendingLosers = [];
     }
-    
-    // Check if losers bracket round complete and winners still going
     if (state.losersQueue.length === 1 && state.winnersQueue.length > 1) {
-      // Switch back to winners bracket
       state.currentBracket = 'winners';
     }
-    
-    // Check for grand finals
     if (state.winnersQueue.length === 1 && state.losersQueue.length === 1) {
-      state.grandFinals = {
-        a: state.winnersQueue[0],
-        b: state.losersQueue[0]
-      };
+      state.grandFinals = { a: state.winnersQueue[0], b: state.losersQueue[0] };
       state.winnersQueue = [];
       state.losersQueue = [];
     }
   }
-  
-  save();
-  render();
+
+  save(); render();
 }
 
 function row(label, value) {
@@ -349,7 +309,6 @@ function row(label, value) {
 }
 
 function card(c, side, bracketType) {
-  // Don't show bracket badges - they're just for internal tracking
   return `
     <div class="card col">
       <h2 class="title">${c.name}</h2>
@@ -374,68 +333,57 @@ function card(c, side, bracketType) {
     </div>`;
 }
 
-function getFinalRankings() {
-  return state.eliminated.slice().reverse();
-}
+function getFinalRankings() { return state.eliminated.slice().reverse(); }
 
 function render() {
   load();
-  
-  // Update progress
+
   const total = getTotalMatches();
   const progress = Math.min(100, Math.round((state.totalMatches / total) * 100));
   const bar = document.querySelector('#progress > div');
   if (bar) bar.style.width = progress + '%';
-  
-  // Check if tournament complete
+
   if (state.eliminated.length === Object.keys(CONTESTANTS).length) {
-    renderFinalResults();
-    return;
+    renderFinalResults(); applyScale(); return;
   }
-  
+
   const match = getCurrentMatch();
-  
-  // Handle BYEs
-  if (match && match.b === null) {
-    choose(match.a);
-    return;
-  }
-  
+
+  if (match && match.b === null) { choose(match.a); return; }
+
   if (!match) {
     document.getElementById('content').innerHTML = '<div class="container"><h2 class="title">Advancing to next round...</h2></div>';
     setTimeout(render, 100);
     return;
   }
-  
+
   const ca = CONTESTANTS[match.a];
   const cb = CONTESTANTS[match.b];
-  
-  // Show current progress without predicting total (since it varies with bracket resets)
+
   document.getElementById('roundTitle').textContent = `Match ${state.totalMatches + 1}`;
-  document.getElementById('content').innerHTML = `<div class="row">${card(ca, 'Left', match.bracket)}<div class="vs">VS</div>${card(cb, 'Right', match.bracket)}</div>`;
+  document.getElementById('content').innerHTML =
+    `<div class="row">${card(ca, 'Left', match.bracket)}<div class="vs">VS</div>${card(cb, 'Right', match.bracket)}</div>`;
+
+  applyScale();
 }
 
 function renderFinalResults() {
   const hdr = document.querySelector('.header');
   if (hdr) hdr.classList.add('hide');
-  
+
   const rankings = getFinalRankings();
-  
-  const champId = rankings[0];
-  const runnerId = rankings[1];
-  const thirdId = rankings[2];
-  
+  const champId = rankings[0], runnerId = rankings[1], thirdId = rankings[2];
   const champ = CONTESTANTS[champId];
   const runner = runnerId ? CONTESTANTS[runnerId] : null;
   const third = thirdId ? CONTESTANTS[thirdId] : null;
-  
+
   const cardP = (who, cls, rank) => who ? `
     <div class="${cls}">
       <div class="rank-badge">#${rank} ${rank === 1 ? 'Winner <span class="crown">👑</span>' : ''}</div>
       <img class="avatar" alt="${who.name}" src="${NAME_TO_URL[who.name] || imgSrc(who.filename)}"/>
       <div style="font-weight:800;margin-top:6px">${who.name}</div>
     </div>` : '';
-  
+
   const rest = rankings.slice(3).map((id, i) => {
     const c = CONTESTANTS[id];
     const rank = i + 4;
@@ -444,7 +392,7 @@ function renderFinalResults() {
       <img class="avatar" alt="${c.name}" src="${NAME_TO_URL[c.name] || imgSrc(c.filename)}"/>
     </div>`;
   }).join('');
-  
+
   document.getElementById('roundTitle').textContent = '🏆 Tournament Complete 🏆';
   document.getElementById('content').innerHTML = `
     <div class="placements-wrap">
@@ -455,6 +403,8 @@ function renderFinalResults() {
       </div>
       <div class="list-wrap">${rest}</div>
     </div>`;
+
+  applyScale();
 }
 
 function resetApp() {
@@ -462,19 +412,55 @@ function resetApp() {
   location.reload();
 }
 
-window.addEventListener('DOMContentLoaded', render);
+/* ---------- proportional scaling (1920 baseline) ---------- */
+(function(){
+  const BASE_VW = 1920;     // your “looks perfect at” width
+  const DESIGN_W = 1200;    // inner layout width
+  const MIN = 0.60;         // don’t shrink below 60%
+  const MAX = 1.40;         // allow tasteful upscaling on big monitors
+
+  function applyScale(){
+    const outer = document.getElementById('scale-outer');
+    const inner = document.getElementById('scale-inner');
+    if(!outer || !inner) return;
+
+    const vw = window.innerWidth;
+    // primary scale based on viewport vs baseline
+    let s = vw / BASE_VW;
+    // ensure the scaled inner actually fits the current viewport
+    s = Math.min(s, (vw - 16) / DESIGN_W);
+    // clamp for sanity
+    s = Math.max(MIN, Math.min(MAX, s));
+
+    inner.style.transform = `scale(${s})`;
+
+    // set outer height to the scaled inner height so the page scroll works naturally
+    const unscaledH = inner.offsetHeight;    // height without transforms
+    outer.style.height = (unscaledH * s + 16) + 'px';
+  }
+  window.applyScale = applyScale;
+  window.addEventListener('resize', applyScale);
+  window.addEventListener('orientationchange', applyScale);
+  window.addEventListener('DOMContentLoaded', () => { render(); applyScale(); });
+})();
   </script>
 </head>
 <body>
-  <div class="header">
-    <div class="container">
-      <div class="progress" id="progress"><div></div></div>
+  <div id="scale-outer">
+    <div id="scale-inner">
+      <div class="header">
+        <div class="container">
+          <div class="progress" id="progress"><div></div></div>
+        </div>
+      </div>
+      <div class="container" style="display:flex;justify-content:center">
+        <h1 id="roundTitle" class="title" style="margin:12px 0"></h1>
+      </div>
+      <main id="content" class="container"></main>
     </div>
   </div>
-  <div class="container" style="display:flex;justify-content:center">
-    <h1 id="roundTitle" class="title" style="margin:12px 0"></h1>
-  </div>
-  <main id="content" class="container"></main>
+
+  <!-- Fixed button outside the scaler so it stays usable on all sizes -->
   <button class="btn reset" onclick="resetApp()">Reset</button>
 </body>
 </html>
