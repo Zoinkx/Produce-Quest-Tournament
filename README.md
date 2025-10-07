@@ -5,7 +5,7 @@ An interactive single‑page web app where you pick between **Produce Quest** co
 ## Demo
 
 Live at:
-➡️ **[https://zoinkx1.github.io/Produce-Quest-Tournament/](https://zoinkx.github.io/Produce-Quest-Tournament/)**
+➡️ **[https://zoinkx.github.io/Produce-Quest-Tournament/](https://zoinkx.github.io/Produce-Quest-Tournament/)**
 
 ## How it works
 
