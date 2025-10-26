@@ -1,465 +1,1248 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Produce Quest - Tournament</title>
-  <meta name="referrer" content="no-referrer-when-downgrade">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="theme-color" content="#ffedf5">
+<title>Produce Quest — Members</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-  :root{ --bg1:#fce3ec; --bg2:#ffe9e9; --bg3:#fefcfd; --primary:#ff8c94; --accent:#ffb3c1; --text:#4a4a4a; }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--text)}
-  body{background:linear-gradient(135deg,var(--bg1) 0%, var(--bg2) 50%, var(--bg3) 100%);min-height:100vh;display:flex;flex-direction:column}
+:root {
+      color-scheme: light;
+      --pink:#ffedf5; --ink:#222; --muted:#6b7280; --card:#fff; --ring:#ffd9e9; --accent:#ff84b7;
+      --maxw: 61.25rem; /* 980px */
+      --radius:18px; --shadow:0 6px 24px rgba(0,0,0,.06), 0 2px 8px rgba(0,0,0,.04);
+      --clusterW: 22rem; --clusterGap: 32px; --btnGap: 16px;
 
-  /* --- scaling wrapper: keeps 1920x baseline look, scales proportionally --- */
-  #scale-outer{position:relative; width:100%; display:grid; justify-items:center; align-items:start; padding:8px 0;}
-  #scale-inner{width:1200px; transform-origin: top center; will-change:transform;}
-
-  .container{max-width:1200px;margin:0 auto;padding:16px}
-  .row{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;align-items:stretch}
-  .col{flex:1 1 520px;max-width:560px}
-  .card{background:#fff;border:2px solid var(--accent);border-radius:14px;box-shadow:0 10px 30px rgba(255,179,193,.4);padding:22px}
-  .title{font-size:28px;font-weight:800;color:var(--primary);text-align:center;margin:0 0 14px}
-  .profile{display:grid;grid-template-columns:.9fr 2.6fr;gap:18px}
-  @media (max-width: 768px){.profile{grid-template-columns:1fr}}
-  .square{height:100%;aspect-ratio:1/1}
-  .avatar{width:100%;height:100%;object-fit:contain;background:transparent}
-  .details{background:#fff7f9;border-radius:10px;padding:12px;box-shadow:inset 0 1px 4px rgba(0,0,0,.06)}
-  .details p{display:flex;justify-content:space-between;margin:6px 0;font-size:14px}
-  .video{position:relative;width:100%;padding-bottom:56.25%;border-radius:12px;overflow:hidden;box-shadow:0 4px 10px rgba(0,0,0,.1);margin-top:16px;margin-bottom:16px}
-  .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-  .btn{width:100%;margin-top:12px;background:linear-gradient(90deg,var(--primary) 0%, var(--accent) 100%);color:#fff;font-weight:800;border:none;border-radius:12px;padding:12px 16px;cursor:pointer;box-shadow:0 4px 15px rgba(255,140,148,.5);transition:transform .12s ease, filter .12s ease, box-shadow .12s ease;will-change:transform}
-  .btn:hover{transform:scale(1.035);filter:hue-rotate(-8deg) saturate(1.05);box-shadow:0 6px 18px rgba(255,140,148,.55)}
-
-  /* ===== Softer progress bar container ===== */
-  .header{background:transparent;box-shadow:none}
-  .header .container{
-    background: linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,245,248,0.85));
-    border: 1px solid #ffd6df;
-    border-radius: 16px;
-    padding: 10px 14px;
-    box-shadow: 0 6px 20px rgba(255,140,148,0.20);
-    backdrop-filter: blur(6px);
-  }
-
-  /* Track + fill */
-  .progress{width:100%;height:14px;border-radius:999px;background:rgba(255,224,233,0.7);box-shadow:inset 0 2px 6px rgba(0,0,0,0.08);overflow:hidden}
-  .progress>div{height:100%;border-radius:inherit;background:linear-gradient(90deg,#ff8c94,#ffb3c1);box-shadow:0 2px 8px rgba(255,140,148,0.35);width:0;transition:width .35s ease}
-
-  .bracket-badge{display:inline-block;padding:4px 10px;border-radius:8px;font-size:13px;font-weight:700;margin-left:8px}
-  .winners-badge{background:#ffd700;color:#8b6914}
-  .losers-badge{background:#c0c0c0;color:#555}
-  .vs{align-self:stretch;min-width:72px;display:flex;align-items:center;justify-content:center;padding:0 8px;font-size:38px;font-weight:900;color:var(--primary)}
-  .reset{width:auto;padding:10px 16px;position:fixed;right:16px;bottom:16px;z-index:999;border-radius:999px}
-  @media (max-width: 768px){.vs{min-height:48px;margin:8px 0}}
-  .placements-wrap{display:flex;flex-direction:column;gap:24px;align-items:center}
-  .champ-wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:end}
-  .champ, .runner, .third{background:#fff;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.08);text-align:center;transition:transform .12s ease, box-shadow .12s ease}
-  .champ{border:4px solid #d4af37}
-  .runner{border:3px solid #c0c0c0}
-  .third{border:3px solid #cd7f32}
-  .champ:hover, .runner:hover, .third:hover{transform:scale(1.06);box-shadow:0 12px 28px rgba(0,0,0,.12)}
-  .champ .avatar{max-width:242px}
-  .runner .avatar, .third .avatar{max-width:170px}
-  .rank-badge{font-weight:900;color:#ff8c94;margin-bottom:8px}
-  .crown{font-size:28px;margin-left:6px}
-  .list-wrap{max-width:408px;width:100%;display:flex;flex-direction:column;gap:10px}
-  .place-card{display:flex;justify-content:space-between;align-items:center;background:#fff;border:2px solid #ffd6df;border-radius:14px;padding:8px 12px;box-shadow:0 4px 12px rgba(0,0,0,.06);transition:transform .15s ease, box-shadow .15s ease;min-height:54px;overflow:visible}
-  .place-card:hover{transform:scale(1.5);box-shadow:0 10px 24px rgba(0,0,0,.12)}
-  .place-card .avatar{width:68px;height:68px;object-fit:contain;position:relative;z-index:1}
-  .place-card .title-center{flex:1;text-align:center;font-weight:900;font-size:1.05rem}
-  .hide{display:none !important}
-</style>
-  <script>
-/* ---------- DATA ---------- */
-const RAW = [
-  ["reika-takeuchi","Reika Takeuchi","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=3064","Reika Takeuchi.webp"],
-  ["nikao-furuse","Nikao Furuse","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=2556","Nikao Furuse.webp"],
-  ["kaede-mori","Kaede Mori","https://www.youtube.com/embed/fqJhGEPyawY?rel=0&start=1289","Kaede Mori.png"],
-  ["kohime-nozaki","Kohime Nozaki","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=347","Kohime Nozaki.webp"],
-  ["aimi-sato","Aimi Sato","https://www.youtube.com/embed/hFKhrDLBV3U?rel=0&start=500","Aimi Sato.webp"],
-  ["mimi-ueki","Mimi Ueki","https://www.youtube.com/embed/fqJhGEPyawY?rel=0&start=3252","Mimi Ueki.webp"],
-  ["ruri-enomoto","Ruri Enomoto","https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=528","Ruri Enomoto.webp"],
-  ["aimi-horinouchi","Aimi Horinouchi","https://www.youtube.com/embed/hFKhrDLBV3U?rel=0&start=755","Aimi Horinouchi.png"],
-  ["karen-otsubo","Karen Otsubo","https://www.youtube.com/embed/hFKhrDLBV3U?rel=0&start=2223","Karen Otsubo.webp"],
-  ["fuka-nagaike","Fuka Nagaike","https://www.youtube.com/embed/fqJhGEPyawY?rel=0&start=245","Fuka Nagaike.webp"],
-  ["aira-shikano","Aira Shikano","https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=918","Aira Shikano.webp"],
-  ["mao-saito","Mao Saito","https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=2749","Mao Saito.webp"],
-  ["choko-yoshida","Choko Yoshida","https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=3075","Choko Yoshida.png"],
-  ["ruka-sato","Ruka Sato","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=1151","Ruka Sato.webp"],
-  ["miyabi-yamamoto","Miyabi Yamamoto","https://www.youtube.com/embed/hFKhrDLBV3U?rel=0&start=200","Miyabi Yamamoto.png"],
-  ["ren-kawakita","Ren Kawakita","https://www.youtube.com/embed/hFKhrDLBV3U?rel=0&start=879","Ren Kawakita.webp"],
-  ["miyuu-sato","Miyuu Sato","https://www.youtube.com/embed/hFKhrDLBV3U?rel=0&start=1842","Miyuu Sato.webp"],
-  ["yu-seto","Yu Seto","https://www.youtube.com/embed/fqJhGEPyawY?rel=0&start=493","Yu Seto.webp"],
-  ["moka-kawaguchi","Moka Kawaguchi","https://www.youtube.com/embed/fqJhGEPyawY?rel=0&start=2840","Moka Kawaguchi.webp"],
-  ["aimi-inuzuka","Aimi Inuzuka","https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=178","Aimi Inuzuka.webp"],
-  ["nana-hashimoto","Nana Hashimoto","https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=321","Nana Hashimoto.webp"],
-  ["saaya-takaki","Saaya Takaki","https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=744","Saaya Takaki.webp"],
-  ["neiro-tanaka","Neiro Tanaka","https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=1162","Neiro Tanaka.png"],
-  ["haruka-kakutani","Haruka Kakutani","https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=1745","Haruka Kakutani.webp"],
-  ["rana-iwase","Rana Iwase","https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=2172","Rana Iwase.webp"],
-  ["nasuzu-koyama","Nasuzu Koyama","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=596","Nasuzu Koyama.webp"],
-  ["kaworu-hayashi","Kaworu Hayashi","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=2265","Kaworu Hayashi.webp"],
-  ["kaaya-yoneyama","Kaaya Yoneyama","https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=3769","Kaaya Yoneyama.png"],
-  /* added */
-  ["amane-yunoki","Amane Yunoki","about:blank","Amane Yunoki.png"],
-  ["aris-kawamatsu","Aris Kawamatsu","about:blank","Aris Kawamatsu.webp"]
-];
-
-const DETAILS = {
-  "aimi-horinouchi": {"age": "18","height": "153 cm","birthday": "August 15, 2006","zodiac": "Leo","bloodType": "B","mbti": "ESFP-T","from": "Yamanashi"},
-  "aimi-inuzuka": {"age": "17","height": "168 cm","birthday": "February 4, 2008","zodiac": "Aquarius","bloodType": "B","mbti": "ENFP","from": "Ishikawa"},
-  "aimi-sato": {"age": "22","height": "158 cm","birthday": "December 16, 2002","zodiac": "Sagittarius","bloodType": "O","mbti": "ISFJ","from": "Tokyo"},
-  "aira-shikano": {"age": "20","height": "164 cm","birthday": "June 19, 2005","zodiac": "Gemini","bloodType": "A","mbti": "ESTJ","from": "Gifu"},
-  "choko-yoshida": {"age": "21","height": "163 cm","birthday": "February 9, 2004","zodiac": "Pisces","bloodType": "A","mbti": "ESFP","from": "Osaka"},
-  "fuka-nagaike": {"age": "20","height": "161 cm","birthday": "April 5, 2005","zodiac": "Aries","bloodType": "B","mbti": "ESFP","from": "Chiba"},
-  "haruka-kakutani": {"age": "18","height": "153 cm","birthday": "March 7, 2009","zodiac": "Pisces","bloodType": "A","mbti": "INTP","from": "Chiba"},
-  "kaaya-yoneyama": {"age": "22","height": "153 cm","birthday": "January 30, 2003","zodiac": "Aquarius","bloodType": "A","mbti": "INFP","from": "Hyogo"},
-  "kaede-mori": {"age": "19","height": "158 cm","birthday": "November 16, 2005","zodiac": "Scorpio","bloodType": "B","mbti": "ESFP","from": "Saitama"},
-  "karen-otsubo": {"age": "20","height": "165 cm","birthday": "November 5, 2004","zodiac": "Scorpio","bloodType": "A","mbti": "INTP","from": "Fukuoka"},
-  "kaworu-hayashi": {"age": "21","height": "159 cm","birthday": "January 29, 2004","zodiac": "Aquarius","bloodType": "AB","mbti": "INFP-T","from": "Kanagawa"},
-  "kohime-nozaki": {"age": "23","height": "159 cm","birthday": "March 24, 2002","zodiac": "Aries","bloodType": "B","mbti": "EAFJ","from": "Osaka"},
-  "mao-saito": {"age": "19","height": "147 cm","birthday": "June 10, 2006","zodiac": "Gemini","bloodType": "A","mbti": "ISFP","from": "Osaka"},
-  "mimi-ueki": {"age": "17","height": "168 cm","birthday": "October 28, 2007","zodiac": "Scorpio","bloodType": "O","mbti": "ENFP","from": "Kanagawa"},
-  "miyabi-yamamoto": {"age": "20","height": "160 cm","birthday": "October 28, 2004","zodiac": "Scorpio","bloodType": "O","mbti": "INFP","from": "Tokyo"},
-  "miyuu-sato": {"age": "21","height": "155 cm","birthday": "December 24, 2003","zodiac": "Capricorn","bloodType": "B","mbti": "ENFP","from": "Aomori"},
-  "moka-kawaguchi": {"age": "20","height": "163 cm","birthday": "May 8, 2005","zodiac": "Taurus","bloodType": "A","mbti": "ISFP","from": "Hokkaido"},
-  "nana-hashimoto": {"age": "20","height": "158 cm","birthday": "September 9, 2004","zodiac": "Virgo","bloodType": "O","mbti": "ENFJ","from": "Fukuoka"},
-  "nasuzu-koyama": {"age": "20","height": "154 cm","birthday": "October 11, 2004","zodiac": "Libra","bloodType": "A","mbti": "INFP","from": "Tokyo"},
-  "neiro-tanaka": {"age": "19","height": "152 cm","birthday": "July 6, 2006","zodiac": "Cancer","bloodType": "AB","mbti": "ESFJ","from": "Fukuoka"},
-  "nikao-furuse": {"age": "20","height": "166 cm","birthday": "July 1, 2005","zodiac": "Cancer","bloodType": "O","mbti": "ISFJ","from": "Miyazaki"},
-  "rana-iwase": {"age": "21","height": "164 cm","birthday": "August 1, 2004","zodiac": "Leo","bloodType": "B","mbti": "INTP","from": "Osaka"},
-  "reika-takeuchi": {"age": "27","height": "168 cm","birthday": "April 8, 1998","zodiac": "Aries","bloodType": "A","mbti": "ENFP","from": "Aichi"},
-  "ren-kawakita": {"age": "13","height": "158 cm","birthday": "August 3, 2011","zodiac": "Leo","bloodType": "O","mbti": "INFJ","from": "Tokyo"},
-  "ruka-sato": {"age": "19","height": "152 cm","birthday": "August 4, 2006","zodiac": "Leo","bloodType": "AB","mbti": "ESFP","from": "Tokyo"},
-  "ruri-enomoto": {"age": "21","height": "160 cm","birthday": "January 20, 2004","zodiac": "Aquarius","bloodType": "O","mbti": "ENFP","from": "Osaka"},
-  "yu-seto": {"age": "21","height": "152 cm","birthday": "May 15, 2004","zodiac": "Taurus","bloodType": "O","mbti": "ISFP","from": "Shizuoka"},
-  "saaya-takaki": {"age": "20","height": "161 cm","birthday": "April 5, 2005","zodiac": "Aries","bloodType": "B","mbti": "ESFP","from": "Osaka"},
-  "amane-yunoki": {"age": "22","height": "155 cm","birthday": "February 19, 2003","zodiac": "Pisces","bloodType": "A","mbti": "INFP","from": "Saga"},
-  "aris-kawamatsu": {"age": "15","height": "148 cm","birthday": "November 26, 2008","zodiac": "Sagittarius","bloodType": "B","mbti": "ISFP","from": "Aichi"}
-};
-
-const NAME_TO_URL = {
-  "Reika Takeuchi": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_9f08b950-6bcf-4a1e-b0ee-9861d64d6c66.webp",
-  "Nikao Furuse": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_247b39a6-0f8b-4a5b-83ca-41cec4a6bde6.webp",
-  "Kaede Mori": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_59c31b13-9334-4efe-918e-94b27c8d6ef5.webp",
-  "Kohime Nozaki": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_f9eac80c-0aed-4e22-9a57-3d1c3467adc1.webp",
-  "Aimi Sato": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_e8eac992-dbc1-40c3-b193-46c7e80a1c5c.webp",
-  "Mimi Ueki": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_df114956-a8e4-41ac-9722-f69cfa3fca82.webp",
-  "Ruri Enomoto": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_96476fa4-b46c-4f23-834e-71b91d27516d.webp",
-  "Aimi Horinouchi": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_32e30ae8-ac09-4560-9d2b-726b561d9a38.webp",
-  "Karen Otsubo": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_5555ed52-8906-4b62-b8e6-db245c134e25.webp",
-  "Fuka Nagaike": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_89f3dba7-90e2-4f33-ab0e-218cc94cd877.webp",
-  "Aira Shikano": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_a8df4302-0a98-4f74-94c4-072a21750c97.webp",
-  "Mao Saito": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_ad91aea3-008c-4f63-9dec-9fe0192d3fcf.webp",
-  "Choko Yoshida": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_719aca00-0ed6-4b59-805b-5544538ca1fd.webp",
-  "Ruka Sato": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_7e9ee581-ced9-4e38-9766-51e87475f831.webp",
-  "Miyabi Yamamoto": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_d9014b31-1d9c-460a-89a7-d6cbb2d30fcf.webp",
-  "Ren Kawakita": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_d7de4d58-6f66-4713-a5dc-f4e8514488f8.webp",
-  "Miyuu Sato": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_dda7db5b-4a8b-42f8-af18-dbb381f3ae37.webp",
-  "Yu Seto": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_6ea0baf9-fbfb-4f4f-8c51-5a85837b6e54.webp",
-  "Moka Kawaguchi": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_054c291b-ebc8-4ec1-94d5-5ab3b2ebc570.webp",
-  "Aimi Inuzuka": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_0f51d9df-6e1a-4aab-ba96-e349fd8e17b2.webp",
-  "Nana Hashimoto": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_7018065b-10e5-4042-a567-8762e1ac53b3.webp",
-  "Saaya Takaki": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_c10f4c71-415c-4bdd-bff1-aa7f6e7d302a.webp",
-  "Neiro Tanaka": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_4a5a41b9-a911-4cc7-814c-f3fbd2c239be.webp",
-  "Haruka Kakutani": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_f368f1a8-0d56-461d-b505-1a07189b13ee.webp",
-  "Rana Iwase": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_085f717c-c381-4235-8847-0d67efe6845d.webp",
-  "Nasuzu Koyama": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_daeec277-0db3-436a-8c11-70d8ddd77eb5.webp",
-  "Kaworu Hayashi": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_0e246f96-bb81-472d-a7cf-d848bedd0329.webp",
-  "Kaaya Yoneyama": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_65fba89b-7f50-4f64-9479-44cffcf63ea3.webp",
-  "Amane Yunoki": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_56fb74eb-2627-45ef-8928-d4c854e752c1.webp",
-  "Aris Kawamatsu": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_f90f4062-06b3-45ba-a1bd-d89c84a156d6.webp"
-};
-
-const imgSrc = (filename) => 'profile-pictures/' + encodeURIComponent(filename);
-const CONTESTANTS = {};
-RAW.forEach(([id,name,embedSrc,filename]) => {
-  CONTESTANTS[id] = { id, name, filename, details: DETAILS[id] || {}, video: { embedUrl: embedSrc } };
-});
-
-/* ---------- STATE + LOGIC ---------- */
-const STATE_KEY = 'bracket_double_elim_v2';
-let state = null;
-
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-}
-
-function initState() {
-  const ids = Object.keys(CONTESTANTS);
-  shuffle(ids);
-
-  state = {
-    winnersQueue: [...ids],
-    losersQueue: [],
-    pendingLosers: [],
-    eliminated: [],
-    totalMatches: 0,
-    currentBracket: 'winners',
-    grandFinals: null,
-    bracketReset: false
-  };
-
-  const nextPowerOf2 = Math.pow(2, Math.ceil(Math.log2(state.winnersQueue.length)));
-  while (state.winnersQueue.length < nextPowerOf2) {
-    state.winnersQueue.push(null);
-  }
-
-  save();
-}
-
-function save() {
-  localStorage.setItem(STATE_KEY, JSON.stringify(state));
-}
-
-function load() {
-  try {
-    const saved = localStorage.getItem(STATE_KEY);
-    if (saved) {
-      state = JSON.parse(saved);
-      return true;
+      --size-4: 180px;
+      --size-5: 150px;
     }
-  } catch (e) {}
-  initState();
-  return false;
-}
-
-function getTotalMatches() {
-  const n = Object.keys(CONTESTANTS).length;
-  const nextPowerOf2 = Math.pow(2, Math.ceil(Math.log2(n)));
-  const byesNeeded = nextPowerOf2 - n;
-  return (2 * n) - 2 - Math.floor(byesNeeded / 2);
-}
-
-function getCurrentMatch() {
-  if (state.grandFinals) return { bracket: 'grand', a: state.grandFinals.a, b: state.grandFinals.b };
-  if (state.currentBracket === 'winners' && state.winnersQueue.length >= 2) {
-    return { bracket: 'winners', a: state.winnersQueue[0], b: state.winnersQueue[1] };
-  }
-  if (state.currentBracket === 'losers' && state.losersQueue.length >= 2) {
-    return { bracket: 'losers', a: state.losersQueue[0], b: state.losersQueue[1] };
-  }
-  return null;
-}
-
-function choose(winnerId) {
-  const match = getCurrentMatch();
-  if (!match) return;
-
-  const loserId = winnerId === match.a ? match.b : match.a;
-  if (loserId !== null) state.totalMatches++;
-
-  if (match.bracket === 'grand') {
-    if (winnerId === state.grandFinals.b && !state.bracketReset) {
-      state.bracketReset = true;
-      save(); render(); return;
+    @media (prefers-color-scheme: dark) { :root { color-scheme: light; } }
+    html, body { overflow-y: scroll; }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      scrollbar-gutter: stable both-edges;
+      margin:0; font-family: 'Poppins', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color:var(--ink);
+      background:
+        radial-gradient(circle, rgba(255,255,255,.85) 2px, transparent 3px) 0 0/64px 64px,
+        radial-gradient(circle, rgba(255,255,255,.85) 2px, transparent 3px) 32px 32px/64px 64px,
+        var(--pink);
+      background-attachment: fixed; background-repeat: repeat, repeat, no-repeat;
+      min-height:100dvh; display:flex; flex-direction:column;
     }
-    state.eliminated.push(loserId);
-    state.eliminated.push(winnerId);
-    save(); render(); return;
-  }
+    .container { max-width:var(--maxw); margin:0 auto; padding:0 10px 28px; flex:0 0 auto; }
+    @media (min-width: 980px) { .container { max-width:980px; width:980px; } }
 
-  if (match.bracket === 'winners') {
-    state.winnersQueue.shift();
-    state.winnersQueue.shift();
-    if (loserId) state.pendingLosers.push(loserId);
-    state.winnersQueue.push(winnerId);
+    /* Header */
+    .topbar { display:grid; grid-template-columns: var(--clusterW) auto var(--clusterW); align-items:center; column-gap: var(--clusterGap); margin: 4px 0; width:100%; }
+    .cluster { width:100%; display:flex; justify-content:center; align-items:center; gap: var(--btnGap); }
+    .logo { position:relative; z-index:2; margin:0; }
+    .logo img { max-height:140px; width:auto; display:block; }
+    .pill {
+      display:inline-flex; align-items:center; gap:8px; padding:12px 16px; border-radius:999px;
+      text-decoration:none; color:var(--ink); background:#fff; box-shadow: var(--shadow);
+      border:1px solid #f6cfe0; font-weight:700; font-size:14px; transition: background-color .12s ease, transform .12s ease, box-shadow .12s ease;
+    }
+    .pill:hover { background:#ffe6f2; box-shadow: 0 10px 24px rgba(0,0,0,.08); transform: translateY(-1px); }
 
-    if (state.winnersQueue.length === 1) {
-      state.currentBracket = 'losers';
-      if (state.pendingLosers.length > 0) {
-        state.losersQueue.push(...state.pendingLosers);
-        state.pendingLosers = [];
+    .controls { display:grid; grid-template-columns: 1fr auto auto auto; gap:8px; margin:6px 0 4px; align-items:center; }
+    @media (max-width: 860px){ .controls{ grid-template-columns: 1fr; } }
+    .input, .select { background:#fff; border:1px solid #f0c8da; border-radius:12px; padding:12px 14px; box-shadow: var(--shadow); font-size:15px; outline:none; width:100%; }
+
+    /* Grid */
+    .grid { display:grid; gap:18px; }
+    .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid.five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    @media (max-width: 1100px){ .grid.four{ grid-template-columns: repeat(3, minmax(0,1fr)); } .grid.five{ grid-template-columns: repeat(4, minmax(0,1fr)); } }
+    @media (max-width: 780px){ .grid.four, .grid.five{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+    @media (max-width: 560px){ .grid.four, .grid.five{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+
+    .card { background: transparent; border: none; border-radius:18px; padding:10px 8px; text-align:center; transition: transform .12s ease, box-shadow .12s ease; cursor:pointer; text-decoration:none; color:inherit; display:block; }
+    .card:hover { transform: translateY(-4px) scale(1.14); }
+    .avatar { width: var(--size-4); height: var(--size-4); border-radius:50%; object-fit:cover; display:block; margin:8px auto 12px; }
+    .grid.five .avatar { width: var(--size-5); height: var(--size-5); }
+    .namebox { background:#fff; border:2px solid #b3d8ff; border-radius:12px; padding:9px 12px; font-weight:800; font-size:15px; box-shadow: 0 6px 0 #e7f2ff; display:inline-block; }
+    .grid.five .namebox { transform: scale(0.92); transform-origin: center top; }
+
+    .team-section { margin-top:18px; } .team-heading { font-size:16px; font-weight:800; color:#b14b7a; margin:6px 2px 8px; }
+
+    /* Detail View */
+    .detail { display:none; min-height: 100dvh; }
+    .detail.visible { display:block; }
+    .floating-back { position: fixed; top: 10px; left: 10px; z-index: 5; }
+    .backbtn { appearance:none; border:none; background:white; border:1px solid #f3c2d7; border-radius:999px; padding:8px 12px; font-weight:700; box-shadow: var(--shadow); cursor:pointer; }
+
+    .detail > .container { padding-top: 16px; }
+
+    .headergrid { display:grid; grid-template-columns: 240px 1fr; gap:16px; align-items:center; }
+    .avatar-lg { width:240px; height:240px; border-radius:50%; object-fit:cover; }
+    .title { margin:0; font-size:28px; font-weight:800; } .jp { color:#c76b94; font-size:16px; font-weight:700; margin-left:6px; }
+    .team-badge { display:inline-block; background:#ffe3f0; border:1px solid #f3c2d7; border-radius:999px; padding:4px 10px; font-weight:700; margin-top:8px; }
+
+    .section { margin-top:16px; }
+    .box { background:#fff8fb; border:1px solid #f6cfe0; border-radius:14px; padding:14px; }
+    .message-note { font-size:16px; line-height:1.6; color:#333; font-family: 'Segoe Print', 'Bradley Hand', 'Lucida Handwriting', 'Brush Script MT', cursive;
+      background: #fffdfd; padding:12px 14px; border-radius:12px; border:1px dashed #f6cfe0; }
+
+    .statline { display:flex; flex-wrap:nowrap; align-items:center; justify-content:space-between; gap:28px; width:100%; }
+    .chip { white-space:nowrap; }
+    .chip .label { font-weight:600; color:#8f96a3; }
+    .chip .value { font-weight:800; }
+
+    @media (max-width: 720px) { .statline { flex-wrap:wrap; } }
+
+    .rows { display:grid; grid-template-columns: 1fr 1fr; gap:12px 20px; }
+    @media (max-width: 860px){ .rows{ grid-template-columns:1fr; } }
+    .row .label { display:block; font-size:12px; color:#a0a6b3; text-transform:uppercase; letter-spacing:.08em; }
+    .row .value { font-weight:800; margin-top:2px; }
+
+    .videos { margin-top: 16px; display:grid; gap:14px; }
+    .video h3 { margin:0 0 8px; font-size:22px; color:#b14b7a; }
+    .video iframe { width:100%; aspect-ratio: 16/9; border:0; border-radius:14px; box-shadow: var(--shadow); }
+
+    /* Footer */
+    .site-footer { flex:0 0 auto; display:flex; justify-content:center; align-items:center; padding:16px 12px 26px; }
+    .foot-note { font-size:12px; color:#7a3c57; text-align:center; line-height:1.35; background: rgba(255,255,255,.7); border:1px solid #f5d4e3; border-radius:12px; padding:8px 12px; box-shadow: 0 4px 16px rgba(0,0,0,.04); }
+
+    /* ---- Strong mobile header/menu rules ---- */
+    @media (max-width: 560px) {
+      .container { padding: 0 8px 22px; max-width: 100%; width: 100%; }
+      .topbar { grid-template-columns: 1fr; row-gap:6px; margin: 2px 0 6px; }
+      .logo { order:-1; justify-self:center; }
+      .logo img { max-height: 108px; margin-top: 0; }
+      .cluster { 
+        display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); 
+        width: 100%; gap:8px; justify-items: stretch; align-items: stretch;
       }
-    } else if (state.winnersQueue.length === 0 || (state.winnersQueue.length === 1 && state.losersQueue.length === 1)) {
-      state.grandFinals = { a: state.winnersQueue[0], b: state.losersQueue[0] };
-      state.winnersQueue = [];
-      state.losersQueue = [];
+      .pill { 
+        width: 100%; justify-content:center; padding:10px 10px; font-size:12.5px; 
+        text-align:center; 
+      }
+      .controls { margin-top: 2px; }
     }
-  } else if (match.bracket === 'losers') {
-    state.losersQueue.shift();
-    state.losersQueue.shift();
-    if (loserId) state.eliminated.push(loserId);
-    state.losersQueue.push(winnerId);
 
-    if (state.losersQueue.length === 0 && state.pendingLosers.length > 0) {
-      state.losersQueue.push(...state.pendingLosers);
-      state.pendingLosers = [];
+    @media (min-width: 561px) and (max-width: 780px) {
+      .topbar { grid-template-columns: 1fr; row-gap:8px; }
+      .cluster { width:100%; display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); justify-content:center; gap:10px 14px; }
+      .logo { order:-1; justify-self:center; }
     }
-    if (state.losersQueue.length === 1 && state.winnersQueue.length > 1) {
-      state.currentBracket = 'winners';
-    }
-    if (state.winnersQueue.length === 1 && state.losersQueue.length === 1) {
-      state.grandFinals = { a: state.winnersQueue[0], b: state.losersQueue[0] };
-      state.winnersQueue = [];
-      state.losersQueue = [];
-    }
+  
+/* --- v2.1.11 desktop header symmetry --- */
+@media (min-width: 981px) {
+  .topbar {
+    grid-template-columns: 1fr auto 1fr;       /* logo truly centered */
+    column-gap: var(--btnGap);                 /* gap next to logo equals button gaps */
   }
-
-  save(); render();
-}
-
-function row(label, value) {
-  return `<p><span>${label}:</span><span><b>${value || '-'}</b></span></p>`;
-}
-
-function card(c, side, bracketType) {
-  return `
-    <div class="card col">
-      <h2 class="title">${c.name}</h2>
-      <div class="profile">
-        <div class="square">
-          <img class="avatar" alt="${c.name}" src="${NAME_TO_URL[c.name] || imgSrc(c.filename)}"/>
-        </div>
-        <div class="details">
-          ${row('From', c.details.from)}
-          ${row('Age', c.details.age)}
-          ${row('Height', c.details.height)}
-          ${row('Birthday', c.details.birthday)}
-          ${row('Zodiac', c.details.zodiac)}
-          ${row('Blood', c.details.bloodType)}
-          ${row('MBTI', c.details.mbti)}
-        </div>
-      </div>
-      <div class="video">
-        <iframe src="${c.video.embedUrl}" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
-      </div>
-      <button class="btn" onclick="choose('${c.id}')">Choose ${side}</button>
-    </div>`;
-}
-
-function getFinalRankings() { return state.eliminated.slice().reverse(); }
-
-function render() {
-  load();
-
-  const total = getTotalMatches();
-  const progress = Math.min(100, Math.round((state.totalMatches / total) * 100));
-  const bar = document.querySelector('#progress > div');
-  if (bar) bar.style.width = progress + '%';
-
-  if (state.eliminated.length === Object.keys(CONTESTANTS).length) {
-    renderFinalResults(); applyScale(); return;
+  .cluster {
+    display: grid;                              /* use grid for precise equal gaps */
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    column-gap: var(--btnGap);                  /* equal spacing between buttons */
+    align-items: center;
+    justify-content: space-between;             /* distribute buttons within the cluster width */
   }
-
-  const match = getCurrentMatch();
-
-  if (match && match.b === null) { choose(match.a); return; }
-
-  if (!match) {
-    document.getElementById('content').innerHTML = '<div class="container"><h2 class="title">Advancing to next round...</h2></div>';
-    setTimeout(render, 100);
-    return;
-  }
-
-  const ca = CONTESTANTS[match.a];
-  const cb = CONTESTANTS[match.b];
-
-  document.getElementById('roundTitle').textContent = `Match ${state.totalMatches + 1}`;
-  document.getElementById('content').innerHTML =
-    `<div class="row">${card(ca, 'Left', match.bracket)}<div class="vs">VS</div>${card(cb, 'Right', match.bracket)}</div>`;
-
-  applyScale();
+  /* Left cluster aligns its buttons to the right edge; right cluster to left edge.
+     Combined with topbar column-gap == --btnGap, the inner button sits exactly one gap from the logo. */
+  .topbar > .cluster:first-child { justify-content: end; }
+  .topbar > .cluster:last-child  { justify-content: start; }
 }
 
-function renderFinalResults() {
-  const hdr = document.querySelector('.header');
-  if (hdr) hdr.classList.add('hide');
 
-  const rankings = getFinalRankings();
-  const champId = rankings[0], runnerId = rankings[1], thirdId = rankings[2];
-  const champ = CONTESTANTS[champId];
-  const runner = runnerId ? CONTESTANTS[runnerId] : null;
-  const third = thirdId ? CONTESTANTS[thirdId] : null;
+.namebox .meta { display:grid; grid-auto-flow:row; justify-items:center; gap:2px; margin-top:6px; font-size:12px; font-weight:600; color:var(--muted); line-height:1.2; }
 
-  const cardP = (who, cls, rank) => who ? `
-    <div class="${cls}">
-      <div class="rank-badge">#${rank} ${rank === 1 ? 'Winner <span class="crown">👑</span>' : ''}</div>
-      <img class="avatar" alt="${who.name}" src="${NAME_TO_URL[who.name] || imgSrc(who.filename)}"/>
-      <div style="font-weight:800;margin-top:6px">${who.name}</div>
-    </div>` : '';
 
-  const rest = rankings.slice(3).map((id, i) => {
-    const c = CONTESTANTS[id];
-    const rank = i + 4;
-    return `<div class="place-card">
-      <div class="title-center">#${rank} ${c.name}</div>
-      <img class="avatar" alt="${c.name}" src="${NAME_TO_URL[c.name] || imgSrc(c.filename)}"/>
-    </div>`;
-  }).join('');
+/* user-rating-slider */
+input[type="range"]#rate_cute,
+input[type="range"]#rate_sing,
+input[type="range"]#rate_dance,
+input[type="range"]#rate_visuals,
+input[type="range"]#rate_personality{
+  width: 220px;
+}
+.rating-inline {
+  display:flex; align-items:center; gap:8px;
+}
+/* optional vertical: add class 'vertical' to range to flip */
+input[type="range"].vertical { writing-mode: bt-lr; -webkit-appearance: slider-vertical; height: 140px; width: 24px; }
 
-  document.getElementById('roundTitle').textContent = '🏆 Tournament Complete 🏆';
-  document.getElementById('content').innerHTML = `
-    <div class="placements-wrap">
-      <div class="champ-wrap">
-        ${cardP(runner, 'runner', 2)}
-        ${cardP(champ, 'champ', 1)}
-        ${cardP(third, 'third', 3)}
-      </div>
-      <div class="list-wrap">${rest}</div>
-    </div>`;
 
-  applyScale();
+
+
+/* Pastel pink theme for rating sliders */
+:root {
+  --slider-pink: #ffc5d9;    /* soft pastel pink */
+  --slider-pink-strong: #ff9fbe;
+  --slider-track: #ffe6ef;
+}
+input[type="range"]#rate_cute,
+input[type="range"]#rate_sing,
+input[type="range"]#rate_dance,
+input[type="range"]#rate_visuals,
+input[type="range"]#rate_personality {
+  accent-color: var(--slider-pink);
+  width: min(420px, 90%);
+  height: 24px;
 }
 
-function resetApp() {
-  localStorage.removeItem(STATE_KEY);
-  location.reload();
+/* WebKit */
+input[type="range"]#rate_cute::-webkit-slider-runnable-track,
+input[type="range"]#rate_sing::-webkit-slider-runnable-track,
+input[type="range"]#rate_dance::-webkit-slider-runnable-track,
+input[type="range"]#rate_visuals::-webkit-slider-runnable-track,
+input[type="range"]#rate_personality::-webkit-slider-runnable-track {
+  background: var(--slider-track);
+  height: 8px;
+  border-radius: 999px;
+}
+input[type="range"]#rate_cute::-webkit-slider-thumb,
+input[type="range"]#rate_sing::-webkit-slider-thumb,
+input[type="range"]#rate_dance::-webkit-slider-thumb,
+input[type="range"]#rate_visuals::-webkit-slider-thumb,
+input[type="range"]#rate_personality::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -6px; /* centers thumb on 8px track */
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: var(--slider-pink);
+  border: 2px solid var(--slider-pink-strong);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-/* ---------- proportional scaling (1920 baseline) ---------- */
-(function(){
-  const BASE_VW = 1920;     // your “looks perfect at” width
-  const DESIGN_W = 1200;    // inner layout width
-  const MIN = 0.60;         // don’t shrink below 60%
-  const MAX = 1.40;         // allow tasteful upscaling on big monitors
+/* Firefox */
+input[type="range"]#rate_cute::-moz-range-track,
+input[type="range"]#rate_sing::-moz-range-track,
+input[type="range"]#rate_dance::-moz-range-track,
+input[type="range"]#rate_visuals::-moz-range-track,
+input[type="range"]#rate_personality::-moz-range-track {
+  background: var(--slider-track);
+  height: 8px;
+  border-radius: 999px;
+  border: none;
+}
+input[type="range"]#rate_cute::-moz-range-thumb,
+input[type="range"]#rate_sing::-moz-range-thumb,
+input[type="range"]#rate_dance::-moz-range-thumb,
+input[type="range"]#rate_visuals::-moz-range-thumb,
+input[type="range"]#rate_personality::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: var(--slider-pink);
+  border: 2px solid var(--slider-pink-strong);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
 
-  function applyScale(){
-    const outer = document.getElementById('scale-outer');
-    const inner = document.getElementById('scale-inner');
-    if(!outer || !inner) return;
+/* Edge/IE (legacy) */
+input[type="range"]#rate_cute::-ms-track,
+input[type="range"]#rate_sing::-ms-track,
+input[type="range"]#rate_dance::-ms-track,
+input[type="range"]#rate_visuals::-ms-track,
+input[type="range"]#rate_personality::-ms-track {
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+  height: 8px;
+}
+input[type="range"]#rate_cute::-ms-fill-lower,
+input[type="range"]#rate_sing::-ms-fill-lower,
+input[type="range"]#rate_dance::-ms-fill-lower,
+input[type="range"]#rate_visuals::-ms-fill-lower,
+input[type="range"]#rate_personality::-ms-fill-lower {
+  background: var(--slider-track);
+  border-radius: 999px;
+}
+input[type="range"]#rate_cute::-ms-fill-upper,
+input[type="range"]#rate_sing::-ms-fill-upper,
+input[type="range"]#rate_dance::-ms-fill-upper,
+input[type="range"]#rate_visuals::-ms-fill-upper,
+input[type="range"]#rate_personality::-ms-fill-upper {
+  background: var(--slider-track);
+  border-radius: 999px;
+}
+input[type="range"]#rate_cute::-ms-thumb,
+input[type="range"]#rate_sing::-ms-thumb,
+input[type="range"]#rate_dance::-ms-thumb,
+input[type="range"]#rate_visuals::-ms-thumb,
+input[type="range"]#rate_personality::-ms-thumb {
+  background: var(--slider-pink);
+  border: 2px solid var(--slider-pink-strong);
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+}
 
-    const vw = window.innerWidth;
-    // primary scale based on viewport vs baseline
-    let s = vw / BASE_VW;
-    // ensure the scaled inner actually fits the current viewport
-    s = Math.min(s, (vw - 16) / DESIGN_W);
-    // clamp for sanity
-    s = Math.max(MIN, Math.min(MAX, s));
 
-    inner.style.transform = `scale(${s})`;
 
-    // set outer height to the scaled inner height so the page scroll works naturally
-    const unscaledH = inner.offsetHeight;    // height without transforms
-    outer.style.height = (unscaledH * s + 16) + 'px';
-  }
-  window.applyScale = applyScale;
-  window.addEventListener('resize', applyScale);
-  window.addEventListener('orientationchange', applyScale);
-  window.addEventListener('DOMContentLoaded', () => { render(); applyScale(); });
-})();
-  </script>
+/* ---- Pastel pink sliders: higher contrast & heart-shaped thumbs ---- */
+:root{
+  --slider-pink: #ffb3cc;         /* base pastel pink (a touch deeper for contrast) */
+  --slider-pink-strong: #ff7faa;  /* accent ring/shadow */
+  --slider-track: #ffd6e5;        /* track pastel */
+  --slider-track-edge: rgba(0,0,0,0.06);
+}
+/* Remove default input white background/outline to avoid the white rectangle */
+input[type="range"]#rate_cute,
+input[type="range"]#rate_sing,
+input[type="range"]#rate_dance,
+input[type="range"]#rate_visuals,
+input[type="range"]#rate_personality{
+  -webkit-appearance: none;
+  appearance: none;
+  width: min(420px, 90%);
+  height: 28px;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  padding: 0;
+  margin: 0.35rem 0 0.8rem;
+}
+
+/* Track - WebKit */
+input[type="range"]#rate_cute::-webkit-slider-runnable-track,
+input[type="range"]#rate_sing::-webkit-slider-runnable-track,
+input[type="range"]#rate_dance::-webkit-slider-runnable-track,
+input[type="range"]#rate_visuals::-webkit-slider-runnable-track,
+input[type="range"]#rate_personality::-webkit-slider-runnable-track{
+  background: var(--slider-track);
+  height: 10px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--slider-track-edge);
+}
+
+/* Thumb as heart (SVG background) - WebKit */
+input[type="range"]#rate_cute::-webkit-slider-thumb,
+input[type="range"]#rate_sing::-webkit-slider-thumb,
+input[type="range"]#rate_dance::-webkit-slider-thumb,
+input[type="range"]#rate_visuals::-webkit-slider-thumb,
+input[type="range"]#rate_personality::-webkit-slider-thumb{
+  -webkit-appearance: none;
+  appearance: none;
+  height: 26px;
+  width: 26px;
+  background-color: transparent;
+  border: none;
+  margin-top: -8px; /* center on 10px track */
+  box-shadow: 0 0 0 3px rgba(255,127,170,0.28);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 90% 90%;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23ff7faa' d='M12.001 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41 1.01 4.2 2.5C11.49 5.01 13.16 4 14.9 4 17.4 4 19.4 6 19.4 8.5c0 3.78-3.4 6.86-8.15 11.54l-1.249 1.31z'/></svg>");
+  cursor: pointer;
+}
+
+/* Track/Thumb - Firefox */
+input[type="range"]#rate_cute::-moz-range-track,
+input[type="range"]#rate_sing::-moz-range-track,
+input[type="range"]#rate_dance::-moz-range-track,
+input[type="range"]#rate_visuals::-moz-range-track,
+input[type="range"]#rate_personality::-moz-range-track{
+  background: var(--slider-track);
+  height: 10px;
+  border-radius: 999px;
+  border: none;
+  box-shadow: inset 0 0 0 1px var(--slider-track-edge);
+}
+input[type="range"]#rate_cute::-moz-range-thumb,
+input[type="range"]#rate_sing::-moz-range-thumb,
+input[type="range"]#rate_dance::-moz-range-thumb,
+input[type="range"]#rate_visuals::-moz-range-thumb,
+input[type="range"]#rate_personality::-moz-range-thumb{
+  height: 26px;
+  width: 26px;
+  border: none;
+  border-radius: 0; /* heart image defines shape */
+  background-color: transparent;
+  box-shadow: 0 0 0 3px rgba(255,127,170,0.28);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 90% 90%;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23ff7faa' d='M12.001 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41 1.01 4.2 2.5C11.49 5.01 13.16 4 14.9 4 17.4 4 19.4 6 19.4 8.5c0 3.78-3.4 6.86-8.15 11.54l-1.249 1.31z'/></svg>");
+  cursor: pointer;
+}
+
+/* Edge/IE fallback keeps circular thumb but higher contrast */
+input[type="range"]#rate_cute::-ms-track,
+input[type="range"]#rate_sing::-ms-track,
+input[type="range"]#rate_dance::-ms-track,
+input[type="range"]#rate_visuals::-ms-track,
+input[type="range"]#rate_personality::-ms-track{
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+  height: 10px;
+}
+input[type="range"]#rate_cute::-ms-fill-lower,
+input[type="range"]#rate_sing::-ms-fill-lower,
+input[type="range"]#rate_dance::-ms-fill-lower,
+input[type="range"]#rate_visuals::-ms-fill-lower,
+input[type="range"]#rate_personality::-ms-fill-lower,
+input[type="range"]#rate_cute::-ms-fill-upper,
+input[type="range"]#rate_sing::-ms-fill-upper,
+input[type="range"]#rate_dance::-ms-fill-upper,
+input[type="range"]#rate_visuals::-ms-fill-upper,
+input[type="range"]#rate_personality::-ms-fill-upper{
+  background: var(--slider-track);
+  border-radius: 999px;
+}
+input[type="range"]#rate_cute::-ms-thumb,
+input[type="range"]#rate_sing::-ms-thumb,
+input[type="range"]#rate_dance::-ms-thumb,
+input[type="range"]#rate_visuals::-ms-thumb,
+input[type="range"]#rate_personality::-ms-thumb{
+  height: 24px; width: 24px; border-radius: 50%;
+  background: var(--slider-pink);
+  border: 2px solid var(--slider-pink-strong);
+}
+
+/* Focus/hover states for accessibility */
+input[type="range"]#rate_cute:focus,
+input[type="range"]#rate_sing:focus,
+input[type="range"]#rate_dance:focus,
+input[type="range"]#rate_visuals:focus,
+input[type="range"]#rate_personality:focus{
+  outline: none;
+  filter: drop-shadow(0 0 0.15rem rgba(255,127,170,0.5));
+}
+
+
+
+/* Row layout: title on left, value on right */
+.rows .row .topline{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:6px;
+}
+.rows .row .topline .label{
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #6a6d78; /* darker than the previous grey */
+  text-transform: none; /* match size with score */
+}
+.rows .row .topline .score{
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--slider-pink-strong);
+}
+/* Remove rectangular halo: use drop-shadow instead of box-shadow */
+input[type="range"]#rate_cute::-webkit-slider-thumb,
+input[type="range"]#rate_sing::-webkit-slider-thumb,
+input[type="range"]#rate_dance::-webkit-slider-thumb,
+input[type="range"]#rate_visuals::-webkit-slider-thumb,
+input[type="range"]#rate_personality::-webkit-slider-thumb{
+  box-shadow: none !important;
+  filter: drop-shadow(0 0 3px rgba(255,127,170,0.5));
+}
+input[type="range"]#rate_cute::-moz-range-thumb,
+input[type="range"]#rate_sing::-moz-range-thumb,
+input[type="range"]#rate_dance::-moz-range-thumb,
+input[type="range"]#rate_visuals::-moz-range-thumb,
+input[type="range"]#rate_personality::-moz-range-thumb{
+  box-shadow: none !important;
+  filter: drop-shadow(0 0 3px rgba(255,127,170,0.5));
+}
+/* Tighten spacing under slider */
+.rows .row .value{ margin-bottom: 10px; }
+
+
+
+/* Improved topline layout and typography */
+.rows .row .topline{
+  display:flex;
+  align-items:baseline;
+  justify-content:flex-start;
+  gap:8px; /* small visual gap between title and value */
+  margin-bottom:6px;
+}
+.rows .row .topline .label{
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #555861;
+}
+.rows .row .topline .score{
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--slider-pink-strong);
+}
+
+
+
+/* Tighten slider spacing */
+.rows .row .value {
+  margin-bottom: 4px;
+}
+
+/* Style smaller grey subtitle */
+.section-title .subtitle {
+  font-size: 0.7em;
+  font-weight: 500;
+  color: #999;
+  margin-left: 6px;
+}
+
+/* Grid layout for 2-column slider arrangement + clear button at bottom right */
+.rows {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px 40px;
+  align-items: start;
+}
+#clear_this {
+  grid-column: 2;
+  justify-self: end;
+  margin-top: 4px;
+}
+</style>
+<style>
+
+/* Refined order toggle text appearance */
+.order-btn {
+  font-weight: 500;              /* lighter than 600 */
+  font-family: inherit;          /* keep consistent font */
+  color: var(--ink);             /* match dropdown text */
+  background: #fff;
+  border: 1px solid #f3c2d7;
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-transform: none;
+  letter-spacing: normal;
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+.order-btn:hover {
+  background: #ffe6f2;
+  transform: translateY(-1px);
+}
+.order-btn .ico {
+  font-weight: 500;              /* make text match dropdown exactly */
+  font-size: 15px;
+  text-transform: none;
+  font-variant-numeric: normal;  /* prevent thick numeric arrows */
+}
+
+
+/* Make room for the extra button */
+.controls{ grid-template-columns: 0.85fr auto auto auto auto auto auto; }
+@media (max-width: 860px){ .controls{ grid-template-columns: 1fr; } }
+
+</style>
+<style>
+/* --- PQ Socials patch v5 (exact spacing match) --- */
+.headergrid { display:grid; grid-template-columns: 240px 1fr auto; gap:16px; align-items:center; }
+@media (max-width: 720px) { .headergrid { grid-template-columns: 1fr; } }
+
+.socials-block { display:flex; flex-direction:column; gap:8px; justify-self:end; align-self:center;
+                 text-align:right; transform: translateY(3px); } /* aligned with name, equal vertical spacing */
+@media (max-width: 720px) { .socials-block { justify-self:start; text-align:left; transform:none; margin-top:6px; } }
+
+.socials-title { font-weight:700; font-size:14px; color:#b14b7a; line-height:1; }
+
+.socials { display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end; }
+@media (max-width: 720px) { .socials { justify-content:flex-start; } }
+
+/* same 40px buttons / 24px icons */
+.sico { display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px;
+        border-radius:999px; background:#fff; border:1px solid #f3c2d7; box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        text-decoration:none; transition: transform .12s ease, background .12s ease; }
+.sico:hover { background:#ffe6f2; transform: translateY(-1px); }
+.sico svg { width:24px; height:24px; }
+</style>
+
+<style>
+/* --- PQ Typography/CSS tidy v7 (My Ratings polish + lighter /100) --- */
+
+/* Import Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root{ --jp-accent: #c76b94; --muted-gray: #7e8494; --light-gray: #a5a8b5; }
+
+/* Message-note */
+.message-note{
+  font-family: 'Inter', 'Poppins', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial !important;
+  font-size: 17px !important;
+  line-height: 1.75 !important;
+  font-weight: 400 !important;
+}
+
+/* Statline chips */
+.chip .label{ color: var(--muted-gray) !important; font-weight: 600 !important; }
+.chip .value{ color: #000 !important; font-weight: 800 !important; }
+
+/* Section headers */
+.section-title,
+.videos .video h3{
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  color: var(--jp-accent) !important;
+  margin: 0 0 8px;
+}
+
+/* Socials title */
+.socials-title{ color: var(--jp-accent) !important; }
+
+/* Sub-headers in Favorites/About */
+.row .label{
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--muted-gray) !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+.row .value{
+  color: #000 !important;
+  font-weight: 700 !important;
+}
+
+/* --- My Ratings box --- */
+
+/* Rating titles (Cuteness, Singing, etc.) */
+.section.box .rows .row .topline .label {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--muted-gray) !important;
+}
+
+/* Rating numbers (0/100) */
+.section.box .rows .row .topline .score {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #000 !important;
+}
+
+/* Slightly lighter "/100" */
+.section.box .rows .row .topline .score span + text,
+.section.box .rows .row .topline .score::after {
+  color: var(--light-gray) !important;
+}
+</style>
+
+
+<style>
+/* --- Status tagging styles --- */
+/* Gray out ONLY the profile image for eliminated contestants when Status is shown */
+.card.status-out .namebox { filter:none; opacity:1; }
+/* Try common selectors for the image container */
+.card.status-out .avatar img,
+.card.status-out img {
+  filter: grayscale(1);
+  opacity: .65;
+  transition: filter .2s ease, opacity .2s ease;
+}
+/* On hover, bring the image back to color */
+.card.status-out:hover .avatar img,
+.card.status-out:hover img {
+  filter: none;
+  opacity: 1;
+}
+
+.namebox .pill-elim {
+  display:inline-block; margin-left:8px; padding:2px 8px;
+  font-size:11px; font-weight:800; color:#9a375e;
+  background:#ffe3f0; border:1px solid #f3c2d7; border-radius:999px;
+}
+
+.namebox .pill-elim { display:block; margin-left:0; margin-top:4px; }
+
+</style>
+
 </head>
 <body>
-  <div id="scale-outer">
-    <div id="scale-inner">
-      <div class="header">
-        <div class="container">
-          <div class="progress" id="progress"><div></div></div>
-        </div>
+  <div class="container" id="listView">
+    <header class="topbar">
+      <div class="cluster">
+        <a class="pill" href="https://www.youtube.com/@ProduceQuest" target="_blank" rel="noopener">YouTube</a>
+        <a class="pill" href="https://produce-quest.jp/" target="_blank" rel="noopener">Website</a>
+        <a class="pill" href="https://zoinkx.github.io/Produce-Quest-Tournament/" target="_blank" rel="noopener">Tournament</a>
       </div>
-      <div class="container" style="display:flex;justify-content:center">
-        <h1 id="roundTitle" class="title" style="margin:12px 0"></h1>
+      <div class="logo"><a href="#"><img id="logoImg" alt="Produce Quest logo"></a></div>
+      <div class="cluster">
+        <a class="pill" href="https://x.com/produce_quest" target="_blank" rel="noopener">Twitter</a>
+        <a class="pill" href="https://www.instagram.com/produce.quest" target="_blank" rel="noopener">Instagram</a>
+        <a class="pill" href="https://www.tiktok.com/@producequest" target="_blank" rel="noopener">TikTok</a>
       </div>
-      <main id="content" class="container"></main>
-    </div>
+    </header>
+
+    <section class="controls">
+      <input id="search" class="input" type="search" placeholder="Search contestant names…" />
+      <select id="sortKey" class="select" aria-label="Sort by">
+        <option value="name">Name</option>
+        <option value="age">Age</option>
+        <option value="height">Height</option>
+        <option value="my-overall">Overall</option>
+        <option value="my-cute">Cuteness</option>
+        <option value="my-sing">Singing</option>
+        <option value="my-dance">Dancing</option>
+        <option value="my-visuals">Visuals</option>
+        <option value="my-personality">Personality</option>
+      
+        <option value="status">Status</option>
+      </select>
+      <button id="sortDirBtn" class="order-btn" type="button" aria-label="Toggle sort order" title="Sort order">
+        <span class="ico" id="sortDirIco">A→Z</span>
+      </button>
+      <select id="teamFilter" class="select"><option value="">All Teams</option></select>
+      <select id="statusFilter" class="select" aria-label="Filter by status">
+        <option value="all">All</option>
+        <option value="in">Still in</option>
+        <option value="out">Eliminated</option>
+      </select>
+      <label style="font-weight:700"><input id="showStatusTag" type="checkbox"/> Status</label>
+      <label style="font-weight:700"><input id="groupByTeam" type="checkbox"/> Group by team</label>
+    </section>
+
+    <section id="gridWrap"></section>
   </div>
 
-  <!-- Fixed button outside the scaler so it stays usable on all sizes -->
-  <button class="btn reset" onclick="resetApp()">Reset</button>
+  <main id="detailView" class="detail">
+    <button class="floating-back backbtn" id="backBtn" aria-label="Back to list">← Back</button>
+    <div class="container">
+      <article id="detailCard" aria-live="polite"></article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="foot-note">
+      <div>This is a fan-made site. All rights, media, and materials belong to their respective owners.</div>
+      <div>Please go support Jin and Maataso and all the Produce Quest girls!</div>
+    </div>
+  </footer>
+
+  <script id="contestantsData" type="application/json">{"project": "Produce Quest", "logo_url": "https://storage.googleapis.com/studio-design-asset-files/projects/moWv263zW6/s-560x560_31e40def-89bb-46f5-a724-329be4a8bf95.gif", "socials": {"youtube": "https://www.youtube.com/@ProduceQuest", "website": "https://produce-quest.jp/", "twitter": "https://x.com/produce_quest", "instagram": "https://www.instagram.com/produce.quest", "tiktok": "https://www.tiktok.com/@producequest"}, "count": 30, "contestants": [{"name": "Aimi Horinouchi", "name_kanji": "堀之内 \nあいみ", "slug": "aimi-horinouchi", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_32e30ae8-ac09-4560-9d2b-726b561d9a38.webp", "birthday": "August 15, 2006", "zodiac": "Leo", "height_cm": 153, "blood_type": "B", "mbti": "ESFP-T", "hobbies": "Karaoke", "special_skill": "Hair arranging", "favorite_animal": "Cat", "favorite_food": "Strawberries", "favorite_music": "\"Blue Petit Cure\" (青いプチキュア) by Jam’s Collection", "favorite_words": "I’ll get better at it!", "favorite_anime": "Crayon Shin-chan", "favorite_idol": "Yamashita Mizuki \n(山下美月) (formerNogizaka46) and \nNigemizu Amu \n(逃げ水あむ) (Kyururin te shitemite)", "karaoke": "\"Kiss Hug\" by Aiko", "treasured_words": "Thank you very much", "if_reborn": "A rich household’s cat", "if_magic": "A spell that makes everyone in the world smile", "message": "\"Nice to meet you.\nThank you very much for looking at this.\nI might still be clumsy, but I’ll do my best to bring smiles to everyone.\nI want to make the world happy with my smile.\nI’m grateful for all the support, and I’ll keep working hard while staying warm-hearted.\nI will become an absolute top idol.\"\n\n— Aimi", "audition_song": "Chou Saikyou (超最強) - Chou Tokimeki ♡ Sendenbu (超ときめき♡宣伝部)", "round2": "Team E: Karikeiyaku no Cinderella (仮契約のシンデレラ) - Shiritsu Ebisu Chugaku (私立恵比寿中学)", "pr_video": "https://www.youtube.com/watch?v=diMo7ZPZycU", "audition_video": "https://www.youtube.com/embed/hFKhrDLBV3U?rel=0&start=755", "round2_team": "Team E", "round2_song": "Karikeiyaku no Cinderella (仮契約のシンデレラ) - Shiritsu Ebisu Chugaku (私立恵比寿中学)"}, {"name": "Aimi Inuzuka", "name_kanji": "犬塚 藍美", "slug": "aimi-inuzuka", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_0f51d9df-6e1a-4aab-ba96-e349fd8e17b2.webp", "birthday": "February 4, 2008", "zodiac": "Aquarius", "height_cm": 168, "blood_type": "B", "mbti": "ENFP (leans INFP at 55%)", "hobbies": "Studying Korean", "special_skill": "Reciting multiplication tables up to 100", "favorite_animal": "Toy poodle", "favorite_food": "Roast beef bowl, strawberry daifuku (strawberry mochi)", "favorite_music": "IVE, iLiFE!, ≠ME, Mrs. GREEN APPLE", "favorite_words": "Cuteness has no limits!!", "favorite_anime": "Beauty and the Beast, Cinderella (Disney works)", "favorite_idol": "Arisu Luna (有栖るな) (former iLiFE!) and \nNigemizu Amu \n(逃げ水あむ) (Kyururin te shitemite)", "karaoke": "\"Koi to Aoi\" by Mrs. GREEN APPLE", "treasured_words": "The happiness in front of you is not a given", "if_reborn": "A cute princess living in a European castle", "if_magic": "Teleport instantly anywhere in the country/world", "message": "\"C4 team’s youngest! 11th grade.\"\n\"I’m tall! Currently 168.7 cm, almost 169 cm!\"\n\"Three weapons: youth, height, positivity.\"\n\"I will do my best with everything to become the best idol! Please support me.\"\n— Aimi", "audition_song": "Daishikyu Daishuki (だいしきゅーだいしゅき) - femme fatale", "round2": "Team C: Saijyoukuu ni Kawaii no! (最上級にかわいいの！) -  Chou Tokimeki ♡ Sendenbu (超ときめき♡宣伝部)", "pr_video": "https://www.youtube.com/watch?v=hBVojse90Bs", "audition_video": "https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=178", "round2_team": "Team C", "round2_song": "Saijyoukuu ni Kawaii no! (最上級にかわいいの！) -  Chou Tokimeki ♡ Sendenbu (超ときめき♡宣伝部)"}, {"name": "Aimi Sato", "name_kanji": "佐藤 愛美", "slug": "aimi-sato", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_e8eac992-dbc1-40c3-b193-46c7e80a1c5c.webp", "birthday": "December 16, 2002", "zodiac": "Sagittarius", "height_cm": 158, "blood_type": "O", "mbti": "ISFJ", "hobbies": "Self nail art", "special_skill": "Cooking (especially pasta dishes)", "favorite_animal": "Cat", "favorite_food": "Pudding, Gachagacha (capsule toy collecting)", "favorite_music": "Yume, SEKAI NO OWARI", "favorite_words": "Effort", "favorite_anime": "Danshi Koukousei no Nichijou (Daily Lives of High School Boys)", "favorite_idol": "Saito Asuka (齊藤飛鳥) (former Nogizaka46)", "karaoke": null, "treasured_words": "Thank you", "if_reborn": "Wants to become a cat", "if_magic": "Wants copying ability", "message": "\"In middle school, I hated myself for being told I was plain. But when I saw idols shining brightly on stage, I admired them and thought, 'I want to be like that.'\nNow, I want to deliver smiles and energy, just like those idols did for me. I want people who see me to think, 'She’s cute!' and believe that with effort, anyone can shine.\nI will absolutely become an idol! Please support me, as I do my best to bring happiness to everyone who cheers me on.\"\n— Aimi Satou", "audition_song": "BaiBai FIGHT!! (倍倍 Fight!!) - CANDY TUNE", "round2": "Team B: Zettai Idol Yamenaide (絶対アイドル辞めないで) - =LOVE", "pr_video": "https://www.youtube.com/watch?v=721LuIKby-Y", "audition_video": "https://www.youtube.com/embed/hFKhrDLBV3U?rel=0&start=500", "round2_team": "Team B", "round2_song": "Zettai Idol Yamenaide (絶対アイドル辞めないで) - =LOVE"}, {"name": "Aira Shikano", "name_kanji": "鹿野 愛良", "slug": "aira-shikano", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_a8df4302-0a98-4f74-94c4-072a21750c97.webp", "birthday": "June 19, 2005", "zodiac": "Gemini", "height_cm": 164, "blood_type": "A", "mbti": "ESTJ", "hobbies": "Driving, watching movies", "special_skill": "Tumbling (転回)", "favorite_animal": "Otter", "favorite_food": "Shabu-shabu", "favorite_music": "All Disney songs", "favorite_words": "Dreams come true!!", "favorite_anime": "Doesn’t watch much, but likes Demon Slayer: Kimetsu no Yaiba", "favorite_idol": "Momo (TWICE)", "karaoke": null, "treasured_words": "You only live once!! Enjoy it to the fullest", "if_reborn": "Wants to be an otter and swim freely in rivers", "if_magic": "Wants to understand all the world’s languages and be friends with everyone", "message": "“Nice to meet you, I’m Aira!\nActually, I used to be shy and not very confident, but I decided to work hard to shine brightly like the idols I admired.\nI want to deliver smiles and energy through powerful singing and performances. This year, I will make sure to give my very best so that everyone watching can feel encouraged.\nEven if we’re apart, I want to be an idol who can always deliver smiles and happiness. Please continue to support me, and I’ll keep growing stronger with all of your encouragement!”\n— Aira Shikano", "audition_song": "BaiBai FIGHT!! (倍倍 Fight!!) - CANDY TUNE", "round2": "Team E: Karikeiyaku no Cinderella (仮契約のシンデレラ) - Shiritsu Ebisu Chugaku (私立恵比寿中学)", "pr_video": "https://www.youtube.com/watch?v=Cl5Ki5fgXxc", "audition_video": "https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=918", "round2_team": "Team E", "round2_song": "Karikeiyaku no Cinderella (仮契約のシンデレラ) - Shiritsu Ebisu Chugaku (私立恵比寿中学)"}, {"name": "Amane Yunoki", "name_kanji": "柚木 普", "slug": "amane-yunoki", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_56fb74eb-2627-45ef-8928-d4c854e752c1.webp", "birthday": "February 19, 2003", "zodiac": "Pisces", "height_cm": 155, "blood_type": "A", "mbti": "INFP", "hobbies": "Searching for cute things", "special_skill": "Still discovering (to be found in the future)", "favorite_animal": "Cat", "favorite_food": "Children’s lunch, omelette", "favorite_music": "ano, SEKAI NO OWARI", "favorite_words": "One of a kind / Above heaven, under heaven, I alone am honored", "favorite_anime": "Jikkyou Shounen Jidou-kun, Crayon Shin-chan, Atashin’chi", "favorite_idol": "Loves idols themselves and admires the existence of idols", "karaoke": null, "treasured_words": "Gratitude", "if_reborn": "Wants to become a cat", "if_magic": "Wants magic that lets her eat without gaining weight, and hold food competitions!", "message": "“Nice to meet you, I’m Amane Yunoki!\nFirst, thank you so much for finding and following me here. I want to be part of a project that delivers ‘cuteness’ and makes people smile.\nThrough this project, I hope to enjoy every day while giving everything I’ve got.\nI’ll do my best to bring you a brand new hakuchuu yume (daydream)!”\n— Amane Yunoki", "audition_song": null, "round2": "Team A: Snow halation (μ’s)", "pr_video": "https://www.youtube.com/watch?v=2yIMxPzOk-g", "audition_video": null, "round2_team": "Team A", "round2_song": "Snow halation (μ’s)"}, {"name": "Arisu Kawamatsu", "name_kanji": "川松 有珠", "slug": "arisu-kawamatsu", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_f90f4062-06b3-45ba-a1bd-d89c84a156d6.webp", "birthday": "November 26, 2008", "zodiac": "Sagittarius", "height_cm": 148, "blood_type": "B", "mbti": "ISFP", "hobbies": "Eating, singing, watching videos", "special_skill": "Playing the guitar and removing earwax", "favorite_animal": "Cat", "favorite_food": "Tamagoyaki, salmon, karaage, yakiimo (roasted sweet potato), cheesecake", "favorite_music": "iLiFE!, 絶対無敵テラリウム", "favorite_words": "Strong, gentle, and beautiful", "favorite_anime": "Demon Slayer: Kimetsu no Yaiba, Slam Dunk", "favorite_idol": "Sakuraba Haruka \n(桜庭蓮花) (CUTIE STREET), Chiba Yuna (千バ ゆな) (Kyururin te shitemite)", "karaoke": null, "treasured_words": "Effort will not betray you!!", "if_reborn": "Wants to be a rich household’s cat", "if_magic": "Wants to be Doraemon!! (So she can call Doraemon anytime and have him help)", "message": "“Just like the sun, I want to shine brightly and bring energy and courage to everyone.\nI want to become an idol who can be a safe place in people’s hearts.\nI’ll work hard with all my energy so I can show my growth and deliver smiles. Please cheer me on!”\n— Aris Kawamatsu", "audition_song": "Kawaii Dake ja Dame desu ka? (かわいいだけじゃだめですか？) - CUTIE STREET", "round2": "Team E: Karikeiyaku no Cinderella (仮契約のシンデレラ) - Shiritsu Ebisu Chugaku (私立恵比寿中学)", "pr_video": "https://www.youtube.com/watch?v=fDFttl2gXd0", "audition_video": null, "round2_team": "Team E", "round2_song": "Karikeiyaku no Cinderella (仮契約のシンデレラ) - Shiritsu Ebisu Chugaku (私立恵比寿中学)"}, {"name": "Choko Yoshida", "name_kanji": "吉田 ちょこ", "slug": "choko-yoshida", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_719aca00-0ed6-4b59-805b-5544538ca1fd.webp", "birthday": "February 9, 2004", "zodiac": "Pisces", "height_cm": 163, "blood_type": "A", "mbti": "ESFP", "hobbies": "Eating sweet foods", "special_skill": "Making sweets", "favorite_animal": "Fluffy otter", "favorite_food": "Chocolate", "favorite_music": "iLiFE! songs, “Ganbatteringā”", "favorite_words": "I want to eat chocolate", "favorite_anime": "Minions", "favorite_idol": "Konoka Riri \n(心花りり) (iLiFE!)", "karaoke": null, "treasured_words": "Thank you / I’m sorry / I love you", "if_reborn": "Wants to be herself (stays as Choco, because being Choco is the best)", "if_magic": "Wants to create a land of sweets where everyone can eat delicious chocolate all the time", "message": "“I’m Choco, who loves chocolate so much!\nWith my sweet performances, I’ll make everyone fall head over heels.\nI’ll do my very best with all of my Choco-like energy, so please support me a lot!”\n— Choko Yoshida", "audition_song": "Watashi no Ichiban Kawaii Tokoro (わたしの一番かわいいところ) - FRUITS ZIPPER", "round2": "Team D: ♡♡♡Wonderland (♡♡♡わんだーらんど) - Kyururin Shite Mite (きゅるりんしてみて)", "pr_video": "https://www.youtube.com/watch?v=lwJC501Qva4", "audition_video": "https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=3075", "round2_team": "Team D", "round2_song": "♡♡♡Wonderland (♡♡♡わんだーらんど) - Kyururin Shite Mite (きゅるりんしてみて)"}, {"name": "Fuuka Nagaike", "name_kanji": "長池 風果", "slug": "fuuka-nagaike", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_89f3dba7-90e2-4f33-ab0e-218cc94cd877.webp", "birthday": "April 5, 2005", "zodiac": "Aries", "height_cm": 161, "blood_type": "B", "mbti": "ESFP", "hobbies": "Watching anime", "special_skill": "Dance", "favorite_animal": "Dog", "favorite_food": "Ume (plum)", "favorite_music": "Aoguro Shidream, Peter Pan", "favorite_words": "If you eat deliciously, it’s zero calories", "favorite_anime": "My Hero Academia, Attack on Titan, Hunter x Hunter, One Punch Man", "favorite_idol": "Momo (TWICE), Tegoshi Yuya \n(手越祐也) (former NEWS; T.N.T)", "karaoke": null, "treasured_words": "Effort will surely be rewarded", "if_reborn": "Wants to be an “absolute beauty” or a rich person", "if_magic": "Wants to become smarter", "message": "“My dream is to become an idol who moves people’s hearts.\nI was often told ‘a cute idol doesn’t suit you,’ so I avoided it for a long time. But my true goal is to move people’s hearts.\nI want to be an idol who can bring love, not just cuteness. That feeling is real.\nI will cherish my individuality and shine in my own way, so I hope you’ll support me as I work hard to move your hearts too.”\n— Fuka Nagaike", "audition_song": "BaiBai FIGHT!! (倍倍 Fight!!) - CANDY TUNE", "round2": "Team F: Ashita no Watashi ni Sachi Are (明日の私に幸あれ) - Nanawo Akari (ナナヲアカリ)", "pr_video": "https://www.youtube.com/watch?v=vvgA6LHswwk", "audition_video": "https://www.youtube.com/embed/fqJhGEPyawY?rel=0&start=245", "round2_team": "Team F", "round2_song": "Ashita no Watashi ni Sachi Are (明日の私に幸あれ) - Nanawo Akari (ナナヲアカリ)"}, {"name": "Haruka Kakutani", "name_kanji": "角谷 遥", "slug": "haruka-kakutani", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_f368f1a8-0d56-461d-b505-1a07189b13ee.webp", "birthday": "March 7, 2009", "zodiac": "Pisces", "height_cm": 153, "blood_type": "A", "mbti": "INTP", "hobbies": "Singing", "special_skill": "Guitar", "favorite_animal": "Octopus", "favorite_food": "Sukiyaki", "favorite_music": "Anything", "favorite_words": "Fall down seven times, get up eight", "favorite_anime": "Madoka Magica", "favorite_idol": "AiNA THE END \n(アイナ・ジ・エンド)", "karaoke": null, "treasured_words": "Thank you", "if_reborn": "Wants to be a ladybug", "if_magic": "Wants to cast Expecto Patronum!!", "message": "“Nice to meet you! I’m Haruka.\nI’ll do my best so I can deliver cheerful songs to everyone!\nPlease support me.”\n— Haruka Kakutani", "audition_song": "Chou Saikyou (超最強) - Chou Tokimeki ♡ Sendenbu (超ときめき♡宣伝部)", "round2": "Team A: Snow halation (μ’s)", "pr_video": "https://www.youtube.com/watch?v=ny3yI3APh10", "audition_video": "https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=1745", "round2_team": "Team A", "round2_song": "Snow halation (μ’s)"}, {"name": "Kaaya Yoneyama", "name_kanji": "米山 花綾", "slug": "kaaya-yoneyama", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_65fba89b-7f50-4f64-9479-44cffcf63ea3.webp", "birthday": "January 30, 2003", "zodiac": "Aquarius", "height_cm": 153, "blood_type": "A", "mbti": "INFP", "hobbies": "Taking care of dogs", "special_skill": "Super ball scooping", "favorite_animal": "Dog", "favorite_food": "Kappamaki (cucumber sushi rolls)", "favorite_music": "Koresawa", "favorite_words": "Never give up on being cute!!", "favorite_anime": "推しの子 (Oshi no Ko)", "favorite_idol": "Hoshino Gen (星野源) (soloist), Shimazaki Haruka (島崎遥香) (former AKB48), Sano Aika (佐野愛花) (CUTIE STREET)", "karaoke": null, "treasured_words": "「かわいいをあきらめない!!」", "if_reborn": "Wants to be herself again", "if_magic": "Wants to make everyone in the country smile with cuteness", "message": "“Hello! I’m Kaaya.\nI’m happy if you think of me as someone who values cuteness.\nMy dream is to become a truly cute idol!! I’ll continue to work hard so I can shine brighter and brighter.\nPlease support me!”\n— Kaaya Yoneyama", "audition_song": "BaiBai FIGHT!! (倍倍 Fight!!) - CANDY TUNE", "round2": "Team C: Saijyoukuu ni Kawaii no! (最上級にかわいいの！) -  Chou Tokimeki ♡ Sendenbu (超ときめき♡宣伝部)", "pr_video": "https://www.youtube.com/watch?v=KoVJydW0jto", "audition_video": "https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=3769", "round2_team": "Team C", "round2_song": "Saijyoukuu ni Kawaii no! (最上級にかわいいの！) -  Chou Tokimeki ♡ Sendenbu (超ときめき♡宣伝部)"}, {"name": "Kaede Mori", "name_kanji": "森 楓", "slug": "kaede-mori", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_59c31b13-9334-4efe-918e-94b27c8d6ef5.webp", "birthday": "November 16, 2005", "zodiac": "Scorpio", "height_cm": 158, "blood_type": "B", "mbti": "ESFP", "hobbies": "Darts and bowling", "special_skill": "Playing instruments and harp", "favorite_animal": "Mameshiba", "favorite_food": "Prosciutto", "favorite_music": "Mrs. GREEN APPLE", "favorite_words": "If you keep believing, your dream will surely come true someday", "favorite_anime": "My Hero Academia", "favorite_idol": "Oshima Yuka\n(大島優子) (former AKB48)", "karaoke": null, "treasured_words": "信じ続けてさえいれば いつか必ず夢は叶う", "if_reborn": "Wants to be a racehorse", "if_magic": "Wants to split body parts into pieces", "message": "“I’ve lived for 19 years with many struggles and difficulties.\nAt times, I felt like giving up, but I realized that if you keep believing, you will definitely find light ahead.\nThrough my singing and dancing, I want to deliver that message — that no matter what struggles you face, it’s okay, because you’re wonderful just as you are.”\n— Kaede Mori", "audition_song": "Kawaii Dake ja Dame desu ka? (かわいいだけじゃだめですか？) - CUTIE STREET", "round2": "Team F: Ashita no Watashi ni Sachi Are (明日の私に幸あれ) - Nanawo Akari (ナナヲアカリ)", "pr_video": "https://www.youtube.com/watch?v=XGlo7s38qos", "audition_video": "https://www.youtube.com/embed/fqJhGEPyawY?rel=0&start=1289", "round2_team": "Team F", "round2_song": "Ashita no Watashi ni Sachi Are (明日の私に幸あれ) - Nanawo Akari (ナナヲアカリ)"}, {"name": "Karen Otsubo", "name_kanji": "大坪 楓恋", "slug": "karen-otsubo", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_5555ed52-8906-4b62-b8e6-db245c134e25.webp", "birthday": "November 5, 2004", "zodiac": "Scorpio", "height_cm": 165, "blood_type": "A", "mbti": "INTP", "hobbies": "Reading manga, watching anime", "special_skill": "Piano, guitar, kendo", "favorite_animal": "Not good with animals", "favorite_food": "Noodles", "favorite_music": "LOML, iLiFE!", "favorite_words": "Don’t worry about it", "favorite_anime": "Demon Slayer: Kimetsu no Yaiba", "favorite_idol": "Otoshima Risa \n(音嶋莉沙) (=LOVE)", "karaoke": null, "treasured_words": "Every misfortune can be a blessing in disguise", "if_reborn": "Wants to become a pillar (hashira) from Demon Slayer", "if_magic": "Wants to have physical abilities on the level of a pillar (hashira)", "message": "“Through Produce Quest, I want to grow and deliver performances full of energy.\nI’m truly glad to have met this project, and I’ll work hard with all my strength to make fans who support me happy.\nPlease keep supporting Produce Quest and me, Karen!”\n— Karen Otsubo", "audition_song": "BaiBai FIGHT!! (倍倍 Fight!!) - CANDY TUNE", "round2": "Team B: Zettai Idol Yamenaide (絶対アイドル辞めないで) - =LOVE", "pr_video": "https://www.youtube.com/watch?v=Rtlgx0uRCo8", "audition_video": "https://www.youtube.com/embed/hFKhrDLBV3U?rel=0&start=2223", "round2_team": "Team B", "round2_song": "Zettai Idol Yamenaide (絶対アイドル辞めないで) - =LOVE"}, {"name": "Kaworu Hayashi", "name_kanji": "林 薫", "slug": "kaworu-hayashi", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_0e246f96-bb81-472d-a7cf-d848bedd0329.webp", "birthday": "January 29, 2004", "zodiac": "Aquarius", "height_cm": 159, "blood_type": "AB", "mbti": "INFP-T", "hobbies": "Collecting Sanrio goods, looking at cute things", "special_skill": "Finding the good points in people", "favorite_animal": "Koalas and otters", "favorite_food": "Pickled plums, sour things, delicious food in general", "favorite_music": "“出会えたらいいのに” (If Only We Could Meet)", "favorite_words": "Whimsical", "favorite_anime": "Sailor Moon, Conan, Porco Rosso", "favorite_idol": "fromis_9, =LOVE, IZ*ONE", "karaoke": null, "treasured_words": "Words are treasures", "if_reborn": "Wants to be herself again", "if_magic": "Wants a stomach that never gets full so she can eat lots of delicious food without stopping", "message": "“Hello, I’m Kaworu!\nThrough Produce Quest, I want to deliver sparkling performances that bring happiness to everyone.\nFor me, idols are like shining stars — they light up my world. Now, I want to shine for others too.\nEven if times get tough, I’ll keep working hard with gratitude and joy, so please support me a lot!”\n— Kaworu Hayashi", "audition_song": "Tokubechu Shite (とくべチュ、して) - =LOVE", "round2": "Team F: Ashita no Watashi ni Sachi Are (明日の私に幸あれ) - Nanawo Akari (ナナヲアカリ)", "pr_video": "https://www.youtube.com/watch?v=BJUdJSVg8Ho", "audition_video": "https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=2265", "round2_team": "Team F", "round2_song": "Ashita no Watashi ni Sachi Are (明日の私に幸あれ) - Nanawo Akari (ナナヲアカリ)"}, {"name": "Kohime Nozaki", "name_kanji": "野崎 来姫", "slug": "kohime-nozaki", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_f9eac80c-0aed-4e22-9a57-3d1c3467adc1.webp", "birthday": "March 24, 2002", "zodiac": "Aries", "height_cm": 159, "blood_type": "B", "mbti": "EAFJ (likely ESFJ/ENFJ style)", "hobbies": "Watching anime", "special_skill": "Fast at typing on PC", "favorite_animal": "Dogs, cats, hamsters", "favorite_food": "Rice, potatoes", "favorite_music": "Japanese songs", "favorite_words": "I want people to say: Since Kohime is trying hard, I’ll try hard too", "favorite_anime": "Evangelion, Attack on Titan, Promised Neverland", "favorite_idol": "Hinata Ena (向日えな) (former iLiFE!), Mikuru (みくる) (Colorful Scream)", "karaoke": null, "treasured_words": "See you again", "if_reborn": "Wants to be an ikemen (handsome guy)", "if_magic": "Wants to ride Eva into the anime world", "message": "“As a child, I was shy and didn’t like standing in front of people.\nSometimes I was called uncute, and I doubted myself. But I want to change my life by becoming someone who can give courage and support others through being an idol.\nI want people to call my name loudly, so I can proudly shine as an idol. Please cheer for me a lot, and give me a cute nickname too!”\n— Kohime Nozaki", "audition_song": "Daishikyu Daishuki (だいしきゅーだいしゅき) - femme fatale", "round2": "Team B: Zettai Idol Yamenaide (絶対アイドル辞めないで) - =LOVE", "pr_video": "https://www.youtube.com/watch?v=E0nHMncWVRI", "audition_video": "https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=347", "round2_team": "Team B", "round2_song": "Zettai Idol Yamenaide (絶対アイドル辞めないで) - =LOVE"}, {"name": "Mao Saito", "name_kanji": "斎藤 まお", "slug": "mao-saito", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_ad91aea3-008c-4f63-9dec-9fe0192d3fcf.webp", "birthday": "June 10, 2006", "zodiac": "Gemini", "height_cm": 147, "blood_type": "A", "mbti": "ISFP", "hobbies": "Karaoke", "special_skill": "Being a “screaming machine”", "favorite_animal": "Dog", "favorite_food": "Mitarashi dango, matcha sweets", "favorite_music": "#ラブコード, iLiFE!", "favorite_words": "Once-in-a-lifetime encounter", "favorite_anime": "The Disastrous Life of Saiki K.", "favorite_idol": "Hakuu Coai \n(白空こあい) (Yakousei Amuse/HEROINES), Sonata Karen \n(空詩かれん) (iLiFE!)", "karaoke": null, "treasured_words": "What will be, will be!!", "if_reborn": "Wants to be a long-tailed tit (シマエナガ bird)", "if_magic": "Wants to talk with her beloved dog", "message": "“Nice to meet you, I’m Mao Saito!\nEven though I’m small, my dreams are big.\nI want to become an idol who can make everyone smile, so I’ll do my very best. Please support me!”\n— Mao Saito", "audition_song": "Tokubechu Shite (とくべチュ、して) - =LOVE", "round2": "Team A: Snow halation (μ’s)", "pr_video": "https://www.youtube.com/watch?v=Z4ogPIcqgZU", "audition_video": "https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=2749", "round2_team": "Team A", "round2_song": "Snow halation (μ’s)"}, {"name": "Mimi Ueki", "name_kanji": "植木 美々", "slug": "mimi-ueki", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_df114956-a8e4-41ac-9722-f69cfa3fca82.webp", "birthday": "October 28, 2007", "zodiac": "Scorpio", "height_cm": 168, "blood_type": "O", "mbti": "ENFP", "hobbies": "Handicrafts", "special_skill": "Making sweets", "favorite_animal": "Bear (stuffed toy)", "favorite_food": "Popping shower (ice cream flavor)", "favorite_music": "夜曇主義です / FRUITS ZIPPER / きゃない / 神様、僕は気づいてしまった / MAN WITH A MISSION", "favorite_words": "It’ll work out somehow", "favorite_anime": "Aikatsu! (アイカツ！), Idol Gokko", "favorite_idol": "Mina (TWICE), Suzuki Airi (鈴木愛理) (former °C-ute)", "karaoke": null, "treasured_words": "Thank you", "if_reborn": "Wants to be herself", "if_magic": "Wants magic that lets her do anything she wants", "message": "“I want to be an idol who brings happiness through performances that make people smile.\nWith my smile and stage presence, I want to become someone important to fans, shining brightly as I keep moving forward.\nI’ll never forget my gratitude, and I’ll keep doing my best while staying true to myself.\nPlease continue to support me — I love you all!!”\n— Mimi Ueki", "audition_song": "Watashi no Ichiban Kawaii Tokoro (わたしの一番かわいいところ) - FRUITS ZIPPER", "round2": "Team E: Karikeiyaku no Cinderella (仮契約のシンデレラ) - Shiritsu Ebisu Chugaku (私立恵比寿中学)", "pr_video": "https://www.youtube.com/watch?v=s8kG-XdLxZ0", "audition_video": "https://www.youtube.com/embed/fqJhGEPyawY?rel=0&start=3252", "round2_team": "Team E", "round2_song": "Karikeiyaku no Cinderella (仮契約のシンデレラ) - Shiritsu Ebisu Chugaku (私立恵比寿中学)"}, {"name": "Miyabi Yamamoto", "name_kanji": "山本 雅", "slug": "miyabi-yamamoto", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_d9014b31-1d9c-460a-89a7-d6cbb2d30fcf.webp", "birthday": "October 28, 2004", "zodiac": "Scorpio", "height_cm": 160, "blood_type": "O", "mbti": "INFP", "hobbies": "Watching idol live performances", "special_skill": "Doing a Tendo impression", "favorite_animal": "Baby capybara", "favorite_food": "Ramen, gyoza, pudding, pancakes, parfait, yakitori, sweets in general", "favorite_music": "OIDEMASE!!, Mishou, FESTIVE", "favorite_words": "a Confucian saying about virtues", "favorite_anime": "Attack on Titan, Fullmetal Alchemist, Gintama, Blue Period, Black Lagoon, Banana Fish, Re:Life, Re:Zero, JoJo’s Bizarre Adventure", "favorite_idol": "Colne (こるね) (former iLiFE!), Chiba Yuna (千バ ゆな) (Kyururin te shitemite), Amane Konoa (天野香乃愛) (≒JOY), Ikeda Teresa (池田瑛紗) (Nogizaka46), Kichise Shinju (吉瀬真珠) (Iginari Tohokusan), Kaneko Rie (金子理江) (REIRIE), Mishina Ruka (三品瑠香) (Wasuta), Shirayuki Himeno (白雪姫乃) (III)", "karaoke": null, "treasured_words": "Let’s eat", "if_reborn": "Wants to be Godzilla, a capybara, or a panda", "if_magic": "Wants to erase all of her complexes", "message": "“Through this audition, I want to become the ideal idol I’ve always dreamed of being.\nWhen I stayed at camp with the other girls, I was struck by their sincerity and dedication, and I truly felt the weight of this project.\nI will give my all so I can stand proudly alongside them as a chosen member. Please support me, Miyabi Yamamoto!”\n— Miyabi Yamamoto", "audition_song": "Kawaii Dake ja Dame desu ka? (かわいいだけじゃだめですか？) - CUTIE STREET", "round2": "Team F: Ashita no Watashi ni Sachi Are (明日の私に幸あれ) - Nanawo Akari (ナナヲアカリ)", "pr_video": "https://www.youtube.com/watch?v=55mCZlJwCz4", "audition_video": "https://www.youtube.com/embed/hFKhrDLBV3U?rel=0&start=200", "round2_team": "Team F", "round2_song": "Ashita no Watashi ni Sachi Are (明日の私に幸あれ) - Nanawo Akari (ナナヲアカリ)"}, {"name": "Miyuu Sato", "name_kanji": "佐藤 美優", "slug": "miyuu-sato", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_dda7db5b-4a8b-42f8-af18-dbb381f3ae37.webp", "birthday": "December 24, 2003", "zodiac": "Capricorn (やぎ座)", "height_cm": 155, "blood_type": "B", "mbti": "ENFP", "hobbies": "Speed talking (スピること)", "special_skill": "First-time meetings", "favorite_animal": "Rabbit", "favorite_food": "Curry, salmon, cheese", "favorite_music": "HANA, ピクリボ (Picribou)", "favorite_words": "Love, thank you, fun", "favorite_anime": "Shun-chan!!", "favorite_idol": "Oshima Yuko (大島優子) (former AKB48)", "karaoke": null, "treasured_words": "Events themselves are meaningless", "if_reborn": "Wants to be actor Tetsuya Ogawa (及川徹 from Haikyuu!!)", "if_magic": "Wants to fly around the world", "message": "“Nice to meet you! I’m Miyuu, an idol trainee.\nI want to fill Japan with love and hope through my activities as an idol!\nEven though I’m still inexperienced, I’ll work hard to become an idol who can truly convey love and hope to the world.\nPlease support me—Produce Quest is the best! I love everyone so much!!”\n— Miyuu Sato", "audition_song": "Tokubechu Shite (とくべチュ、して) - =LOVE", "round2": "Team C: Saijyoukuu ni Kawaii no! (最上級にかわいいの！) -  Chou Tokimeki ♡ Sendenbu (超ときめき♡宣伝部)", "pr_video": "https://www.youtube.com/watch?v=9SmXaveutGE", "audition_video": "https://www.youtube.com/embed/hFKhrDLBV3U?rel=0&start=1842", "round2_team": "Team C", "round2_song": "Saijyoukuu ni Kawaii no! (最上級にかわいいの！) -  Chou Tokimeki ♡ Sendenbu (超ときめき♡宣伝部)"}, {"name": "Moka Kawaguchi", "name_kanji": "河口 萌桜", "slug": "moka-kawaguchi", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_054c291b-ebc8-4ec1-94d5-5ab3b2ebc570.webp", "birthday": "May 8, 2005", "zodiac": "Taurus", "height_cm": 163, "blood_type": "A", "mbti": "ISFP", "hobbies": "Traveling alone", "special_skill": "Speaking dialects, hot spring hopping", "favorite_animal": "Dog", "favorite_food": "Cheese", "favorite_music": "50TA", "favorite_words": "With all my effort", "favorite_anime": "Chibi Maruko-chan, Shin-chan", "favorite_idol": "Nigemizu Amu (逃げ水あむ) (Kyururin te shitemite), Konoka Riri (心花りり) (iLiFE!)", "karaoke": null, "treasured_words": "Be yourself", "if_reborn": "Wants to be herself again", "if_magic": "Wants to fly through the sky", "message": "“Nice to meet you, I’m Moka Kawaguchi from Hokkaido!\nI’ve always admired idols shining on stage, and the effort they put in behind the scenes. Seeing them gave me courage and made me want to become someone who could do the same for others.\nI’ll do my best with all my strength so I can shine as an idol too!\nI want to become someone who can inspire people in their daily lives just by being myself.\nPlease support me—I’ll bring you energy and smiles!”\n— Moka Kawaguchi", "audition_song": "BaiBai FIGHT!! (倍倍 Fight!!) - CANDY TUNE", "round2": "Team D: ♡♡♡Wonderland (♡♡♡わんだーらんど) - Kyururin Shite Mite (きゅるりんしてみて)", "pr_video": "https://www.youtube.com/watch?v=tLJD11Qb_x8", "audition_video": "https://www.youtube.com/embed/fqJhGEPyawY?rel=0&start=2840", "round2_team": "Team D", "round2_song": "♡♡♡Wonderland (♡♡♡わんだーらんど) - Kyururin Shite Mite (きゅるりんしてみて)"}, {"name": "Nana Hashimoto", "name_kanji": "橋本 奈々", "slug": "nana-hashimoto", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_7018065b-10e5-4042-a567-8762e1ac53b3.webp", "birthday": "September 9, 2004", "zodiac": "Virgo", "height_cm": 158, "blood_type": "O", "mbti": "ENFJ", "hobbies": "Playing guitar (self-taught)", "special_skill": "Giving life advice (her nickname: モモんば / Momonba)", "favorite_animal": "Cat", "favorite_food": "Meat (especially beef!!)", "favorite_music": "JO1, 3RACHA, ちゃんみな (Chanmina), “I Hate This Love Song”", "favorite_words": "Enjoy everything with all your energy", "favorite_anime": "Banana Fish, NANA, Love So Life", "favorite_idol": "Nigemizu Amu (逃げ水あむ) (Kyururin te shitemite), Hanni (NewJeans)", "karaoke": null, "treasured_words": "Be yourself", "if_reborn": "Wants to be a handsome, cool guy", "if_magic": "Wants to fly through the sky", "message": "“Since aiming to become an idol, I’ve wanted to level up more and more so I can be someone fans are proud to support.\nPlease watch over my growth and let me deliver many smiles and lots of energy and happiness to you!”\n— Nana Hashimoto", "audition_song": "Tokubechu Shite (とくべチュ、して) - =LOVE", "round2": "Team B: Zettai Idol Yamenaide (絶対アイドル辞めないで) - =LOVE", "pr_video": "https://www.youtube.com/watch?v=hdGviA-Xvew", "audition_video": "https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=321", "round2_team": "Team B", "round2_song": "Zettai Idol Yamenaide (絶対アイドル辞めないで) - =LOVE"}, {"name": "Nasuzu Koyama", "name_kanji": "小山 奈涼", "slug": "nasuzu-koyama", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_daeec277-0db3-436a-8c11-70d8ddd77eb5.webp", "birthday": "October 11, 2004", "zodiac": "Libra", "height_cm": 154, "blood_type": "A", "mbti": "INFP", "hobbies": "Playing with dogs", "special_skill": "South Island dialect speaking", "favorite_animal": "Dogs, rabbits, marmots", "favorite_food": "Pasta, yakisoba", "favorite_music": "Show Halation, =LOVE, musicals", "favorite_words": "Delicious is the best!", "favorite_anime": "Horimiya, Uchino Kodomo wa Kaijuu Desu", "favorite_idol": "Ice (あいす) (iLiFE), Colne (こるね) (Non¬Fiction), Wakumo Roko \n(羽雲ろこ) (MEGAFON)\n\n(Note: 2 names not legible)", "karaoke": null, "treasured_words": "Treasure the little happinesses", "if_reborn": "Wants to be a rich person’s cat or a cool guy", "if_magic": "Wants to fly through the sky and go anywhere instantly", "message": "“People often tell me I love eating more than anyone! That’s true—I want to become an idol who delivers smiles through my big appetite and positive energy.\nI’ve faced many challenges, but thanks to this audition I met wonderful people who encouraged me to keep going.\nI’ll treasure this chance, grow as an idol, and do my best without regrets!\nPlease support me—together let’s shine!”\n— Nasuzu Koyama", "audition_song": "Chou Saikyou (超最強) - Chou Tokimeki ♡ Sendenbu (超ときめき♡宣伝部)", "round2": "Team A: Snow halation (μ’s)", "pr_video": "https://www.youtube.com/watch?v=dEp08quBSfU", "audition_video": "https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=596", "round2_team": "Team A", "round2_song": "Snow halation (μ’s)"}, {"name": "Neiro Tanaka", "name_kanji": "田中 音色", "slug": "neiro-tanaka", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_4a5a41b9-a911-4cc7-814c-f3fbd2c239be.webp", "birthday": "July 6, 2006", "zodiac": "Cancer", "height_cm": 152, "blood_type": "AB", "mbti": "ESFJ", "hobbies": "Playing bass", "special_skill": "Doing “Aikyō” poses", "favorite_animal": "Her pet chicken “Chacha”", "favorite_food": "Jaga-butter (potato with butter)", "favorite_music": "“Kiss Hug” by aiko, “Over Drive” by JUDY AND MARY", "favorite_words": "Take it slow—Yoshi", "favorite_anime": "Heartcatch Precure!, Ojamajo Doremi", "favorite_idol": "Tsugunaga Momoka (嗣永桃子) (former Berryz Kobo)", "karaoke": "“Kiss Hug” by aiko", "treasured_words": "Thank you", "if_reborn": "Wants to be a stone—so she doesn’t have to be busy", "if_magic": "Wants to help people in trouble", "message": "“Through Produce Quest, I’ve learned to accept both the good and not-so-good parts of myself, and I want to be someone who can spread love.\nI’ll become an idol who feels like a close friend, someone you can rely on.\nI want to share happiness and sadness with everyone, and create an ideal idol who can fully understand fans’ feelings.\nPlease support me as I give my all!”\n— Neiro Tanaka", "audition_song": "Tokubechu Shite (とくべチュ、して) - =LOVE", "round2": "Team E: Karikeiyaku no Cinderella (仮契約のシンデレラ) - Shiritsu Ebisu Chugaku (私立恵比寿中学)", "pr_video": "https://www.youtube.com/watch?v=DcP2CqVKd38", "audition_video": "https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=1162", "round2_team": "Team E", "round2_song": "Karikeiyaku no Cinderella (仮契約のシンデレラ) - Shiritsu Ebisu Chugaku (私立恵比寿中学)"}, {"name": "Nikoa Furuse", "name_kanji": "古瀬 \nにこあ", "slug": "nikoa-furuse", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_247b39a6-0f8b-4a5b-83ca-41cec4a6bde6.webp", "birthday": "July 1, 2005", "zodiac": "Cancer", "height_cm": 166, "blood_type": "O", "mbti": "ISFJ", "hobbies": "Eating delicious food", "special_skill": "Drawing cute characters and pictures", "favorite_animal": "Cats (but she says she loves all animals)", "favorite_food": "Ramen (especially tonkotsu), rice, omurice, strawberries", "favorite_music": "=LOVE, ≠ME, ≒JOY, HoneyWorks, Aimer, Aimyon\n", "favorite_words": "Never give up on being cute!!", "favorite_anime": "Ojamajo Doremi, Nijiiro Prism Girl", "favorite_idol": "Takamatsu Hitomi (髙松瞳) (=LOVE), Tajima Sakurako \n(田島櫻子) (Onephony)", "karaoke": "“Last Chance, Last Dance” / ≠ME", "treasured_words": "Thank you very much", "if_reborn": "Wants to be a cat", "if_magic": "Wants a spell so that even after eating a lot at night, she won’t gain weight the next day", "message": "“Nice to meet you! I’ve loved drawing ever since I was little, so I often drew pictures of animals and food.\nMy dream has always been to become an idol who can give courage to many people.\nEven if I’m clumsy, I’ll do my best to become someone who can give fans smiles, energy, and happiness.\nPlease support me as I give my all!!”\n— Nikao Furuse", "audition_song": "Tokubechu Shite (とくべチュ、して) - =LOVE", "round2": "Team C: Saijyoukuu ni Kawaii no! (最上級にかわいいの！) -  Chou Tokimeki ♡ Sendenbu (超ときめき♡宣伝部)", "pr_video": "https://www.youtube.com/watch?v=SdwXw4QFaw0", "audition_video": "https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=2556", "round2_team": "Team C", "round2_song": "Saijyoukuu ni Kawaii no! (最上級にかわいいの！) -  Chou Tokimeki ♡ Sendenbu (超ときめき♡宣伝部)"}, {"name": "Rana Iwase", "name_kanji": "岩瀬 蘭奈", "slug": "rana-iwase", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_085f717c-c381-4235-8847-0d67efe6845d.webp", "birthday": "August 1, 2004", "zodiac": "Leo", "height_cm": 164, "blood_type": "B", "mbti": "INTP", "hobbies": "Observing people", "special_skill": "Solving Rubik’s cubes and finding interesting things in everyday life", "favorite_animal": "Cat", "favorite_food": "Açaí bowls", "favorite_music": "Cö shu Nie", "favorite_words": "Respect", "favorite_anime": null, "favorite_idol": "Kitami Rine (北美梨寧) (Iginari Tohokusan), \nSenritsu Kanano (戦慄かなの) (femme fatale)", "karaoke": "「あの子コンプレックス」 / ≠LOVE", "treasured_words": "This is my life. Since I don’t know what will happen after I’m born, I’ll give my all to this life", "if_reborn": "Wouldn’t want to be a man, still wants to be an idol", "if_magic": "Wants to become a “Super Entertainer”", "message": "“Nice to meet you, I’m Rana!\nI want to become an idol who can move people’s hearts—not just by singing and dancing, but by expressing my feelings and showing them in my performances.\nThrough Produce Quest, I’ll grow even more and absolutely make my debut. Please give me your warm support as I give it everything I have!!”\n— Rana Iwase", "audition_song": "Daishikyu Daishuki (だいしきゅーだいしゅき) - femme fatale", "round2": "Team C: Saijyoukuu ni Kawaii no! (最上級にかわいいの！) -  Chou Tokimeki ♡ Sendenbu (超ときめき♡宣伝部)", "pr_video": "https://www.youtube.com/watch?v=8ZrP99u6CeE", "audition_video": "https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=2172", "round2_team": "Team C", "round2_song": "Saijyoukuu ni Kawaii no! (最上級にかわいいの！) -  Chou Tokimeki ♡ Sendenbu (超ときめき♡宣伝部)"}, {"name": "Reika Takeuchi", "name_kanji": "竹内 麗花", "slug": "reika-takeuchi", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_9f08b950-6bcf-4a1e-b0ee-9861d64d6c66.webp", "birthday": "April 8, 1998", "zodiac": "Aries", "height_cm": 168, "blood_type": "A", "mbti": "ENFP", "hobbies": "Gaming", "special_skill": "High-speed typing", "favorite_animal": "Dog", "favorite_food": "Sushi", "favorite_music": "“Hitoride Ikirare-sou” tte Sore tte Ne, Hometeiru no? (by Juice=Juice)", "favorite_words": "A smile is the best makeup for a girl", "favorite_anime": "Love Live!, Evangelion, Demon Slayer, etc.", "favorite_idol": "Miyawaki Sakura (宮脇咲良) (former HKT48 / former IZ*ONE / LE SSERAFIM)", "karaoke": "“Bishoujo Muzai” (Pretty Girl Innocent)", "treasured_words": "Gratitude", "if_reborn": "A dandelion (soft and fluffy)", "if_magic": "Stay cute forever", "message": "“I’m like a power spot, so if you support me, you’ll become happy.\nLet’s be happy together. Please support me.”\n— Rekachi", "audition_song": "Tokubechu Shite (とくべチュ、して) - =LOVE", "round2": "Team A: Snow halation (μ’s)", "pr_video": "https://www.youtube.com/watch?v=ILbtZXDBzjY", "audition_video": "https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=3064", "round2_team": "Team A", "round2_song": "Snow halation (μ’s)"}, {"name": "Ren Kawakita", "name_kanji": "川北 恋", "slug": "ren-kawakita", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_d7de4d58-6f66-4713-a5dc-f4e8514488f8.webp", "birthday": "August 3, 2011", "zodiac": "Leo", "height_cm": 158, "blood_type": "O", "mbti": "INFJ (sometimes INFP!)", "hobbies": "Reading, anime", "special_skill": "Golf", "favorite_animal": "Dog", "favorite_food": "Ramen", "favorite_music": "Ai-Story, iLiFE! (#ラブコード)", "favorite_words": "After the clouds, the sky turns blue", "favorite_anime": "Demon Slayer (Kimetsu no Yaiba)", "favorite_idol": "Sasaki Maika (佐々木舞香) (=LOVE)", "karaoke": "iLiFE! – “#ラブコード”", "treasured_words": "Thank you", "if_reborn": "Emma Watson", "if_magic": "Would go back to the past", "message": "“Nice to meet you!\nI’m Ren Kawakita, 14 years old, a second-year middle school student.\nEven though I may not be perfect, I’ll do my best so that everyone can see my growth from now on! I’d be so happy if you could support me 💕”\n— Ren Kawakita", "audition_song": "BaiBai FIGHT!! (倍倍 Fight!!) - CANDY TUNE", "round2": "Team B: Zettai Idol Yamenaide (絶対アイドル辞めないで) - =LOVE", "pr_video": "https://www.youtube.com/watch?v=yBC2L85tZOs", "audition_video": "https://www.youtube.com/embed/hFKhrDLBV3U?rel=0&start=879", "round2_team": "Team B", "round2_song": "Zettai Idol Yamenaide (絶対アイドル辞めないで) - =LOVE"}, {"name": "Ruka Sato", "name_kanji": "佐藤 琉花", "slug": "ruka-sato", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_7e9ee581-ced9-4e38-9766-51e87475f831.webp", "birthday": "August 4, 2006", "zodiac": "Leo", "height_cm": 152, "blood_type": "AB", "mbti": "ESFP", "hobbies": "Watching comedy shows", "special_skill": "Making friends with anyone instantly", "favorite_animal": "Pugs", "favorite_food": "Zero Cola", "favorite_music": "\"I’m Not the Only One\"", "favorite_words": "Bakushou = \"bursting into laughter", "favorite_anime": "Attack on Titan", "favorite_idol": "Itano Tomomi (板野友美) (former AKB48)", "karaoke": "\"元気を出して\" (Genki o Dashite) – Mariya Takeuchi", "treasured_words": "Little things pile up to make a big difference", "if_reborn": "Wants to be Dwayne Johnson (!!)", "if_magic": "Become immortal", "message": "“Nice to meet you, I’m Ruka!\nThrough Produce Quest, of course I want to debut, but more than that, I want to bring smiles and energy to as many people as possible and make them think I’m their idol.\nI’ll give everything I’ve got with charm, effort, and goals, so please support me!\nLet’s dance with a huge smile together!”\n— Ruka Sato", "audition_song": "BaiBai FIGHT!! (倍倍 Fight!!) - CANDY TUNE", "round2": "Team D: ♡♡♡Wonderland (♡♡♡わんだーらんど) - Kyururin Shite Mite (きゅるりんしてみて)", "pr_video": "https://www.youtube.com/watch?v=BaSUilUP2Z8", "audition_video": "https://www.youtube.com/embed/xeTEh-j1Mck?rel=0&start=1151", "round2_team": "Team D", "round2_song": "♡♡♡Wonderland (♡♡♡わんだーらんど) - Kyururin Shite Mite (きゅるりんしてみて)"}, {"name": "Ruri Enomoto", "name_kanji": "榎本 るり", "slug": "ruri-enomoto", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_96476fa4-b46c-4f23-834e-71b91d27516d.webp", "birthday": "January 20, 2004", "zodiac": "Aquarius", "height_cm": 160, "blood_type": "O", "mbti": "ENFP", "hobbies": "Visiting cafés", "special_skill": "Singing with a cute voice", "favorite_animal": "Cat", "favorite_food": "Salmon", "favorite_music": "Idol songs & Vocaloid", "favorite_words": "Cute!", "favorite_anime": "Demon Slayer", "favorite_idol": "Kagura Hinako (神楽ひなこ) (former Yakousei Amuse)", "karaoke": "“今好きになる” (Ima Suki ni Naru)", "treasured_words": "Thank you, sorry", "if_reborn": "Would want to be a cat", "if_magic": "Stay 20 years old forever", "message": "“I want to deliver smiles and hope to everyone \nStay with me—cute, sparkly Ruri!\n— Ruri Enomoto", "audition_song": "Tokubechu Shite (とくべチュ、して) - =LOVE", "round2": "Team D: ♡♡♡Wonderland (♡♡♡わんだーらんど) - Kyururin Shite Mite (きゅるりんしてみて)", "pr_video": "https://www.youtube.com/watch?v=yiWblX9o_f0", "audition_video": "https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=528", "round2_team": "Team D", "round2_song": "♡♡♡Wonderland (♡♡♡わんだーらんど) - Kyururin Shite Mite (きゅるりんしてみて)"}, {"name": "Saaya Takaki", "name_kanji": "高木 紗彩", "slug": "saaya-takaki", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_c10f4c71-415c-4bdd-bff1-aa7f6e7d302a.webp", "birthday": "March 30, 2004", "zodiac": "Aries", "height_cm": 156, "blood_type": "A", "mbti": "ENTP (sometimes ENFP)", "hobbies": "Karaoke, games, traveling, studying", "special_skill": "Speaking just a little bit of Arabic", "favorite_animal": "Dogs (especially ones that look strong)", "favorite_food": "Rice (plain rice, mochi, sushi rice—anything rice-based!)", "favorite_music": "Kimi ni Aitakute / ZARD", "favorite_words": "“進む先に光明の光野に進む必然で切り開く時代”", "favorite_anime": "JoJo’s Bizarre Adventure", "favorite_idol": "Matsuura Aya (松浦亜弥) (soloist)", "karaoke": "“DIAMONDS” / Princess Princess", "treasured_words": "Don’t regret not doing it. Regret it after doing it!!", "if_reborn": "Wants to be an adventurous explorer or to have limitless stamina", "if_magic": "Fly through time, past and future, to know everything", "message": "“I’m Saaya Takaki from Osaka! \nI tend to be skeptical of my own strengths, but through Produce Quest, \nI want to deliver performances that make everyone feel happy they found me. \nI’ll give my all with everything I have. Please cheer me on!!”", "audition_song": "Tokubechu Shite (とくべチュ、して) - =LOVE", "round2": "Team F: Ashita no Watashi ni Sachi Are (明日の私に幸あれ) - Nanawo Akari (ナナヲアカリ)", "pr_video": "https://www.youtube.com/watch?v=DK68FB2uo5k", "audition_video": "https://www.youtube.com/embed/EDd_F25TbtA?rel=0&start=744", "round2_team": "Team F", "round2_song": "Ashita no Watashi ni Sachi Are (明日の私に幸あれ) - Nanawo Akari (ナナヲアカリ)"}, {"name": "Yuu Seto", "name_kanji": "瀬戸 優羽", "slug": "yuu-seto", "image": "https://storage.googleapis.com/studio-cms-assets/projects/moWv263zW6/s-485x485_webp_6ea0baf9-fbfb-4f4f-8c51-5a85837b6e54.webp", "birthday": "May 15, 2004", "zodiac": "Taurus", "height_cm": 152, "blood_type": "O", "mbti": "ISFP", "hobbies": "Listening to怪談 (ghost stories)", "special_skill": "Cooking (especially seasoning dishes)", "favorite_animal": "Meerkat ( wants to keep one)", "favorite_food": "Mala Tang (spicy hot pot)", "favorite_music": "Idol songs & Vocaloid", "favorite_words": "super spicy", "favorite_anime": "Inu x Boku SS", "favorite_idol": "Cent Chihiro Chittiii (セントチヒロ・チッチ) (former BiSH)", "karaoke": "“夜もすがら君想ふ” (Yoru mo Sugara Kimi Omou)", "treasured_words": "Thank you", "if_reborn": "Would want to be the family dog", "if_magic": "Change her appearance", "message": "“Nice to meet you, I’m Yu. I want to be an idol like a hero!\nThe reason I’m alive today is because I had the desire to become an idol.\nThe one who took my hand was an idol, so I want to become someone like that too—an idol who can save others.\nI will absolutely become a hero-like idol who gives courage to people!”\n\n— Yu Seto", "audition_song": "BaiBai FIGHT!! (倍倍 Fight!!) - CANDY TUNE", "round2": "Team D: ♡♡♡Wonderland (♡♡♡わんだーらんど) - Kyururin Shite Mite (きゅるりんしてみて)", "pr_video": "https://www.youtube.com/watch?v=ExP6MOIanV8", "audition_video": "https://www.youtube.com/embed/fqJhGEPyawY?rel=0&start=493", "round2_team": "Team D", "round2_song": "♡♡♡Wonderland (♡♡♡わんだーらんど) - Kyururin Shite Mite (きゅるりんしてみて)"}]}</script>
+
+  <script>
+  (function() {
+    const state = {
+      data: JSON.parse(document.getElementById('contestantsData').textContent),
+      filtered: [], groupByTeam: false, team: '', q: '',
+      statusFilter: 'all', showStatus: false,
+      sortKey: 'name', sortDir: 'asc' // default Low→High (A→Z for Name)
+    }
+    // --- Flexible team video mapping (Evaluation 3 etc.) ---
+    const teamVideos = {
+      'Team A': {
+        title: 'Re:Start!!!!! - Snow halation',
+        url: 'https://www.youtube.com/watch?v=hXsY0U9zZuA'
+      }
+      // Add more teams here later, e.g.:
+      // ,'Team B': { title: 'Some Title', url: 'https://www.youtube.com/watch?v=XXXXXXXXXXX' }
+    };
+
+    function ytToEmbed(u){
+      if(!u) return '';
+      const m = u.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
+      const id = m ? m[1] : '';
+      return id ? ('https://www.youtube.com/embed/' + id) : '';
+    }
+;
+
+    const els = {
+      listView: document.getElementById('listView'),
+      detailView: document.getElementById('detailView'),
+      gridWrap: document.getElementById('gridWrap'),
+      search: document.getElementById('search'),
+      teamFilter: document.getElementById('teamFilter'),
+      groupByTeam: document.getElementById('groupByTeam'),
+      detailCard: document.getElementById('detailCard'),
+      logoImg: document.getElementById('logoImg'),
+      backBtn: document.getElementById('backBtn'),
+      sortKey: document.getElementById('sortKey'),
+      sortDirBtn: document.getElementById('sortDirBtn'),
+      sortDirIco: document.getElementById('sortDirIco'),
+      statusFilter: document.getElementById('statusFilter'),
+      showStatusTag: document.getElementById('showStatusTag')
+    };
+
+    const campEvalByTeam = {
+      'Team A': 'https://www.youtube.com/watch?v=gSh4oCu5eyE&t=4040',
+      'Team B': 'https://www.youtube.com/watch?v=mrjl0bbR6Mo&t=4839',
+      'Team C': 'https://www.youtube.com/watch?v=ge8q9dJWS58&t=2986',
+      'Team D': 'https://www.youtube.com/watch?v=Lj6aYSKsi3M&t=4909',
+      'Team E': 'https://www.youtube.com/watch?v=Fp_BGCQhTQ4&t=4603',
+      'Team F': 'https://www.youtube.com/watch?v=_0nkWpDEQ60&t=4750'
+    };
+
+    const stage3EvalByTeam = {
+      'Team A': 'https://www.youtube.com/watch?v=hXsY0U9zZuA'
+    };
+
+    const slugify = s => (s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+    const LS_KEY = 'pq_user_ratings_v1';
+
+    // Eliminated list (from Eliminated.txt)
+    const ELIMINATED_NAMES = ["Nasuzu Koyama", "Aimi Sato", "Ren Kawakita", "Kohime Nozaki", "Ruri Enomoto", "Ruka Sato", "Yuu Seto", "Aira Shikano", "Arisu Kawamatsu", "Aimi Horinouchi", "Fuuka Nagaike", "Kaede Mori"];
+    const ELIMINATED = new Set(ELIMINATED_NAMES.map(n => (n||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')));
+
+
+    if(state.data.logo_url) els.logoImg.src = state.data.logo_url;
+
+    function safeParse(json, fallback) { try { return JSON.parse(json) ?? fallback; } catch { return fallback; } }
+    let userRatings = safeParse(localStorage.getItem(LS_KEY), {});
+    function saveRatings() { localStorage.setItem(LS_KEY, JSON.stringify(userRatings)); }
+
+    function getUserScore(slug, key) {
+      const r = userRatings[slug];
+      if (!r) return null;
+      if (key === 'overall') {
+        const vals = [r.cute||0, r.sing||0, r.dance||0, r.visuals||0, r.personality||0];
+        return (vals[0]+vals[1]+vals[2]+vals[3]+vals[4]) / 5;
+      }
+      return r[key] ?? null;
+    }
+
+    const toEmbed = (url) => {
+      if (!url) return null;
+      try {
+        const u = new URL(url);
+        const parseT = (t) => {
+          if (!t) return 0;
+          if (/^\d+$/.test(t)) return parseInt(t, 10);
+          let s = 0;
+          const h = t.match(/(\d+)h/), m = t.match(/(\d+)m/), ss = t.match(/(\d+)s/);
+          if (h) s += parseInt(h[1], 10) * 3600;
+          if (m) s += parseInt(m[1], 10) * 60;
+          if (ss) s += parseInt(ss[1], 10);
+          return s;
+        };
+        if (u.hostname.includes('youtube.com')) {
+          const id = u.searchParams.get('v');
+          if (id) {
+            const startSec = parseT(u.searchParams.get('t'));
+            const params = new URLSearchParams({ rel: '0' });
+            if (startSec > 0) params.set('start', String(startSec));
+            return 'https://www.youtube.com/embed/' + id + '?' + params.toString();
+          }
+          return url;
+        }
+        if (u.hostname.includes('youtu.be')) {
+          const id = u.pathname.replace('/', '');
+          const startSec = parseT(u.searchParams.get('t'));
+          const params = new URLSearchParams({ rel: '0' });
+          if (startSec > 0) params.set('start', String(startSec));
+          return 'https://www.youtube.com/embed/' + id + '?' + params.toString();
+        }
+      } catch (e) {}
+      return url;
+    };
+
+    function parseRound2(rec) {
+      let team = rec.round2_team || '';
+      let song = rec.round2_song || '';
+      if ((!team || !song) && rec.round2) {
+        const parts = String(rec.round2).split(':');
+        if (!team && parts[0]) team = parts[0].trim();
+        if (!song && parts[1]) song = parts.slice(1).join(':').trim();
+      }
+      return { team, song };
+    }
+
+    function computeAge(birthdayStr) {
+      if (!birthdayStr) return '';
+      const d = new Date(birthdayStr);
+      if (isNaN(d)) return '';
+      const diff = Date.now() - d.getTime();
+      const age = new Date(diff).getUTCFullYear() - 1970;
+      return age > 0 ? age : '';
+    }
+
+    function comparator(key, dir) {
+      const isOut = c => ELIMINATED.has((c.slug||slugify(c.name)));
+      const byNameAsc = (a,b)=>a.name.localeCompare(b.name);
+      const byNameDesc = (a,b)=>b.name.localeCompare(a.name);
+      const safeNum = v => (v==null||isNaN(v)? null : Number(v));
+      const ageOf  = c => { const a = computeAge(c.birthday); return a===''? null : a; };
+      const hOf    = c => safeNum(c.height_cm);
+      const score  = (k) => c => getUserScore((c.slug||slugify(c.name)), k);
+
+      const cmpNum = (get) => (a,b)=>{
+        const av=get(a), bv=get(b);
+        if(av==null && bv==null) return 0;
+        if(av==null) return 1;
+        if(bv==null) return -1;
+        return (state.sortDir==='asc') ? (av - bv) : (bv - av);
+      };
+
+      switch (key) {
+        case 'status': {
+          const cmp = (a,b)=> {
+            const av = isOut(a) ? 1 : 0;
+            const bv = isOut(b) ? 1 : 0;
+            return (state.sortDir==='asc') ? (av - bv) : (bv - av);
+          };
+          return cmp;
+        }
+        case 'name':   return dir==='asc'? byNameAsc : byNameDesc;
+        case 'age':    return cmpNum(ageOf);
+        case 'height': return cmpNum(hOf);
+        case 'my-overall':     return cmpNum(score('overall'));
+        case 'my-cute':        return cmpNum(score('cute'));
+        case 'my-sing':        return cmpNum(score('sing'));
+        case 'my-dance':       return cmpNum(score('dance'));
+        case 'my-visuals':     return cmpNum(score('visuals'));
+        case 'my-personality': return cmpNum(score('personality'));
+        default: return byNameAsc;
+      }
+    }
+
+    function setOrderButtonLabel() {
+      const key = state.sortKey, dir = state.sortDir;
+      let text = '';
+      if (key === 'name') text = (dir==='asc'?'A→Z':'Z→A');
+      else if (key === 'status') text = (dir==='asc'?'In→Out':'Out→In');
+      else text = (dir==='asc'?'Low → High':'High → Low');
+      els.sortDirIco.textContent = text;
+      els.sortDirBtn.title = 'Sort: ' + text;
+      els.sortDirBtn.setAttribute('aria-label', 'Toggle sort order (currently ' + text + ')');
+    }
+
+    function escapeHtml(s) { return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+    function cardHTML(c) {
+      const slug = c.slug || slugify(c.name);
+      const age = computeAge(c.birthday);
+      const sortKey = state.sortKey;
+      const teamF   = String(state.team||'').trim();
+      const grouped = !!state.groupByTeam;
+
+      const isOut = ELIMINATED.has(slug);
+      const tag = (state.showStatus && isOut) ? '<span class="pill-elim">Eliminated</span>' : '';
+
+
+      let mode = 'none';
+      if (grouped || teamF) mode = 'group';
+      else if (!(sortKey === 'name' && state.sortDir === 'asc')) mode = 'hint';
+
+      let meta = '';
+      if (mode === 'group') {
+        const parts = [];
+        if (sortKey.indexOf('my-')===0) {
+          const map = {'my-overall':'overall','my-cute':'cute','my-sing':'sing','my-dance':'dance','my-visuals':'visuals','my-personality':'personality'};
+          const key = map[sortKey];
+          if (key) {
+            const val = getUserScore(slug, key);
+            if (val != null) {
+              const labelMap = {overall:'Overall', cute:'Cuteness', sing:'Singing', dance:'Dancing', visuals:'Visuals', personality:'Personality'};
+              parts.push(labelMap[key] + ': ' + Math.round(+val) + '/100');
+            }
+          }
+        }
+        if (age !== '') parts.push('Age: ' + age);
+        if (c.birthday) parts.push(c.birthday);
+        if (c.height_cm) parts.push(c.height_cm + ' cm');
+        if (c.mbti) parts.push(c.mbti);
+        if (parts.length) meta = '<div class="meta">' + parts.map(p=>'<div>'+escapeHtml(p)+'</div>').join('') + '</div>';
+      } else if (mode === 'hint') {
+        let hint = '';
+        if (sortKey === 'age' && age !== '') hint = 'Age: ' + age;
+        else if (sortKey === 'height' && c.height_cm) hint = 'Height: ' + c.height_cm + ' cm';
+        else if (sortKey.indexOf('my-')===0) {
+          const map = {'my-overall':'overall','my-cute':'cute','my-sing':'sing','my-dance':'dance','my-visuals':'visuals','my-personality':'personality'};
+          const key = map[sortKey];
+          if (key) {
+            const val = getUserScore(slug, key);
+            if (val != null) {
+              const labelMap = {overall:'Overall', cute:'Cuteness', sing:'Singing', dance:'Dancing', visuals:'Visuals', personality:'Personality'};
+              hint = labelMap[key] + ': ' + Math.round(+val) + '/100';
+            }
+          }
+        }
+        if (hint) meta = '<div class="meta"><div>'+escapeHtml(hint)+'</div></div>';
+      }
+
+      return (
+        '<a class="card' + (state.showStatus && isOut ? ' status-out' : '') + '" href="#/member/' + slug + '" aria-label="Open profile of ' + escapeHtml(c.name) + '">' +
+          '<img class="avatar" src="' + (c.image || '') + '" alt="' + escapeHtml(c.name) + '" loading="lazy" />' +
+          '<div class="namebox">' + escapeHtml(c.name) + tag + meta + '</div>' +
+        '</a>'
+      );
+    }
+    function cardHTMLWrap(list, cls) { return '<div class="grid ' + cls + '">' + list.map(cardHTML).join('') + '</div>'; }
+
+    function renderList() {
+      const q = state.q.trim().toLowerCase();
+      const teamF = (state.team||'').toLowerCase();
+      const all = state.data.contestants.slice().sort(comparator(state.sortKey, state.sortDir));
+      
+      const filtered = all.filter(c=>{
+        const nameMatch = (c.name||'').toLowerCase().includes(q);
+        const team = parseRound2(c).team;
+        const teamMatch = !teamF || (team && team.toLowerCase()===teamF);
+        const isOut = ELIMINATED.has((c.slug||slugify(c.name)));
+        const statusMatch = (state.statusFilter==='all') || (state.statusFilter==='in' && !isOut) || (state.statusFilter==='out' && isOut);
+        return nameMatch && teamMatch && statusMatch;
+      });
+
+      state.filtered = filtered;
+
+      const teams = Array.from(new Set(state.data.contestants.map(c=>parseRound2(c).team).filter(Boolean))).sort((a,b)=>a.localeCompare(b));
+      els.teamFilter.innerHTML = '<option value="">All Teams</option>' + teams.map(t=>'<option value="'+t+'">'+t+'</option>').join('');
+      if (state.team) els.teamFilter.value = state.team;
+
+      if (state.groupByTeam) {
+        const groups = {};
+        filtered.forEach(c=>{
+          const k = parseRound2(c).team || 'No Team';
+          (groups[k] = groups[k] || []).push(c);
+        });
+        const order = Object.keys(groups).sort((a,b)=>a.localeCompare(b));
+        els.gridWrap.innerHTML = order.map(team=>'<section class="team-section"><h2 class="team-heading">'+team+'</h2>'+cardHTMLWrap(groups[team], 'five')+'</section>').join('');
+      } else {
+        const cls = teamF ? 'five' : 'four';
+        let html = cardHTMLWrap(filtered, cls);
+
+        // If a specific team is selected in the dropdown, append that team's video (if defined).
+        if (state.team) {
+          const tv = teamVideos[state.team];
+          if (tv) {
+            const embed = ytToEmbed(tv.url);
+            if (embed) {
+              html += '<section class="videos" style="margin-top: 8px;">' + 
+                      video(tv.title, embed) + 
+                      '</section>';
+            }
+          }
+        }
+
+        els.gridWrap.innerHTML = html;
+      }
+    }
+
+    function statChip(label, value) { if(!value) return ''; return '<span class="chip"><span class="label">'+escapeHtml(label)+':</span> <span class="value">'+escapeHtml(String(value))+'</span></span>'; }
+    function row(label, value) { if(!value) return ''; return '<div class="row"><span class="label">'+escapeHtml(label)+'</span><span class="value">'+escapeHtml(String(value))+'</span></div>'; }
+    function video(title, src) { return '<div class="video"><h3>'+escapeHtml(title)+'</h3><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen src="'+src+'"></iframe></div>'; }
+
+    function renderDetail(slug) {
+      const c = state.data.contestants.find(x => (x.slug||slugify(x.name))===slug);
+      if (!c) { els.detailCard.innerHTML = '<p>Not found.</p>'; return; }
+      const team = parseRound2(c).team;
+      const age = computeAge(c.birthday);
+      const pr  = toEmbed(c.pr_video);
+      const aud = toEmbed(c.audition_video);
+      const teamEvalRaw = campEvalByTeam[team];
+      const teamEval = toEmbed(teamEvalRaw);
+      const videos = [];
+      if (aud) videos.push({title:'Audition', src:aud});
+      if (pr)  videos.push({title:'1-Minute PR', src:pr});
+      if (team && teamEval) videos.push({title:'2.5th Stage Training Camp Evaluation — ' + team, src:teamEval});
+
+      
+      const stage3Raw = stage3EvalByTeam[team];
+      const stage3 = toEmbed(stage3Raw);
+      if (team && stage3) videos.push({title:'Stage 3 Evaluation — ' + team, src:stage3});
+const slugKey = (c.slug||slugify(c.name));
+      const current = userRatings[slugKey] || { cute: 0, sing: 0, dance: 0, visuals: 0, personality: 0 };
+
+      function inputRow(key, label, valId) {
+        const val = (current[key] || 0);
+        return ''+
+        '<div class="row">'+
+          '<div class="topline"><label class="label">'+label+'</label><div class="score"><span id="'+valId+'">'+val+'</span>/100</div></div>'+
+          '<div class="value"><input id="rate_'+key+'" type="range" min="0" max="100" step="1" value="'+val+'" /></div>'+
+        '</div>';
+      }
+
+      const ratingsBox = ''+
+        '<section class="section box">'+
+          '<h3 class="section-title">My Ratings <span class="subtitle">(saved on this device)</span></h3>'+
+          '<div class="rows">'+
+            inputRow('cute','Cuteness','rate_cute_val')+
+            inputRow('sing','Singing','rate_sing_val')+
+            inputRow('dance','Dancing','rate_dance_val')+
+            inputRow('visuals','Visuals','rate_visuals_val')+
+            inputRow('personality','Personality','rate_personality_val')+
+          '</div>'+
+          '<div style="margin-top:10px;display:flex;gap:8px;"><button id="clear_this" class="pill" type="button">Clear this member</button></div>'+
+        '</section>';
+
+      const messageBox = c.message ? '<section class="section"><div class="message-note">'+escapeHtml(c.message)+'</div></section>' : '';
+
+      els.detailCard.innerHTML = ''+
+        '<section class="headergrid">'+
+          '<img class="avatar-lg" src="'+(c.image||'')+'" alt="'+escapeHtml(c.name)+'" />'+
+          '<div>'+
+            '<h1 class="title">'+escapeHtml(c.name)+(c.name_kanji? ' <span class="jp">('+escapeHtml(c.name_kanji)+')</span>' : '')+'</h1>'+
+            (team? '<span class="team-badge">'+escapeHtml(team)+'</span>' : '')+
+          '</div>'+
+        '</section>'+
+        messageBox+
+        '<section class="section box">'+
+          '<div class="statline">'+
+            statChip('Birthday', c.birthday)+
+            statChip('Age', (age? (age + ' yrs') : ''))+
+            statChip('Height', (c.height_cm? (c.height_cm + ' cm') : ''))+
+            statChip('Blood', c.blood_type)+
+            statChip('MBTI', c.mbti)+
+            statChip('Zodiac', c.zodiac)+
+          '</div>'+
+        '</section>'+
+        '<section class="section box">'+
+          '<h3 class="section-title">Favorites</h3>'+
+          '<div class="rows">'+
+            row('Animal', c.favorite_animal)+
+            row('Food', c.favorite_food)+
+            row('Music', c.favorite_music)+
+            row('Words', c.favorite_words)+
+            row('Anime', c.favorite_anime)+
+            row('Idol', c.favorite_idol)+
+            row('Karaoke', c.karaoke)+
+          '</div>'+
+        '</section>'+
+        '<section class="section box">'+
+          '<h3 class="section-title">About</h3>'+
+          '<div class="rows">'+
+            row('Hobbies', c.hobbies)+
+            row('Special skill', c.special_skill)+
+            row('Treasured words', c.treasured_words)+
+            row('If reborn', c.if_reborn)+
+            row('If could use magic', c.if_magic)+
+            row('Audition Song', c.audition_song)+
+            row('Round 2 Team', team)+
+          '</div>'+
+        '</section>'+
+        ratingsBox+
+        (videos.length ? ('<section class="videos">'+videos.map(v=>video(v.title, v.src)).join('')+'</section>') : '');
+
+      // Wire up ratings
+      (function(){
+        const cute = document.getElementById('rate_cute');
+        const sing = document.getElementById('rate_sing');
+        const dance = document.getElementById('rate_dance');
+        const visuals = document.getElementById('rate_visuals');
+        const personality = document.getElementById('rate_personality');
+        const cuteVal = document.getElementById('rate_cute_val');
+        const singVal = document.getElementById('rate_sing_val');
+        const danceVal = document.getElementById('rate_dance_val');
+        const visualsVal = document.getElementById('rate_visuals_val');
+        const personalityVal = document.getElementById('rate_personality_val');
+        const clearBtn = document.getElementById('clear_this');
+
+        function commit(){
+          userRatings[slugKey] = {
+            cute: Number(cute && cute.value || 0),
+            sing: Number(sing && sing.value || 0),
+            dance: Number(dance && dance.value || 0),
+            visuals: Number(visuals && visuals.value || 0),
+            personality: Number(personality && personality.value || 0)
+          };
+          saveRatings();
+          renderList();
+        }
+
+        [[cute,cuteVal],[sing,singVal],[dance,danceVal],[visuals,visualsVal],[personality,personalityVal]].forEach(([inp,lab])=>{
+          if (!inp) return;
+          inp.addEventListener('input', ()=>{ lab.textContent = Math.round(inp.value); });
+          inp.addEventListener('change', commit);
+        });
+
+        if (clearBtn) {
+          clearBtn.addEventListener('click', ()=>{
+            delete userRatings[slugKey];
+            saveRatings();
+            location.hash = '#';
+            renderList();
+          });
+        }
+      })();
+    }
+
+    function onHash() {
+      const m = (location.hash||'').match(/^#\/member\/([a-z0-9-]+)/);
+      if (m) {
+        els.listView.style.display='none';
+        document.getElementById('detailView').classList.add('visible');
+        renderDetail(m[1]);
+      } else {
+        document.getElementById('detailView').classList.remove('visible');
+        els.listView.style.display='';
+      }
+    }
+
+    // Events
+    els.search.addEventListener('input', e=>{ state.q = e.target.value; renderList(); });
+    els.teamFilter.addEventListener('change', e=>{ state.team = e.target.value; renderList(); });
+    els.groupByTeam.addEventListener('change', e=>{ state.groupByTeam = !!e.target.checked; renderList(); });
+    els.statusFilter.addEventListener('change', e=>{ state.statusFilter = e.target.value; renderList(); });
+    els.showStatusTag.addEventListener('change', e=>{ state.showStatus = !!e.target.checked; renderList(); });
+    els.backBtn.addEventListener('click', ()=>{ history.pushState('', document.title, window.location.pathname + window.location.search); onHash(); });
+
+    // Default sort direction is ASC for every key
+    els.sortKey.addEventListener('change', e=>{ state.sortKey = e.target.value; state.sortDir = 'asc'; setOrderButtonLabel(); renderList(); });
+    els.sortDirBtn.addEventListener('click', ()=>{ state.sortDir = (state.sortDir==='asc' ? 'desc' : 'asc'); setOrderButtonLabel(); renderList(); });
+
+    window.addEventListener('hashchange', onHash);
+
+    // Initialize
+    (function initTeams() {
+      const teams = Array.from(new Set(state.data.contestants.map(c=>parseRound2(c).team).filter(Boolean))).sort((a,b)=>a.localeCompare(b));
+      els.teamFilter.innerHTML = '<option value="">All Teams</option>' + teams.map(t=>'<option value="'+t+'">'+t+'</option>').join('');
+    })();
+    setOrderButtonLabel();
+    renderList();
+    onHash();
+  })();
+  </script>
+<script>
+/* --- PQ Socials patch v5 --- */
+(function(){ 
+  const SOCIALS = {"rana-iwase": {"x": "https://x.com/wilthelan", "instagram": "https://www.instagram.com/i.rana_proque/"}, "aimi-inuzuka": {"instagram": "https://www.instagram.com/i.aimi_proque/", "x": "https://x.com/imaimiin", "tiktok": "https://www.tiktok.com/@i.aimi_proque"}, "mimi-ueki": {"instagram": "https://www.instagram.com/u.mimi_proque/", "x": "https://x.com/mimi_ueki33"}, "ruri-enomoto": {"instagram": "https://www.instagram.com/e.ruri_proque/", "x": "https://x.com/ru2ya_chan"}, "karen-otsubo": {"x": "https://x.com/lcarenren", "instagram": "https://www.instagram.com/o.karen_proque/"}, "haruka-kakutani": {"x": "https://x.com/proque_00oo", "instagram": "https://www.instagram.com/k.haruka_proque/"}, "ren-kawakita": {"instagram": "https://www.instagram.com/k.ren_proque/"}, "moka-kawaguchi": {"x": "https://x.com/mccmk_", "instagram": "https://www.instagram.com/k.moka_proque/"}, "nasuzu-koyama": {"instagram": "https://www.instagram.com/k.nasuzu_proque/"}, "mao-saito": {"instagram": "https://www.instagram.com/s.mao_proque/", "x": "https://x.com/mao_proque"}, "aimi-sato": {"instagram": "https://www.instagram.com/s.aimi_proque/", "tiktok": "https://www.tiktok.com/@aimi_purin_1216"}, "ruka-sato": {"instagram": "https://www.instagram.com/s.ruka_proque/"}, "miyuu-sato": {"tiktok": "https://www.tiktok.com/@03miyuu", "instagram": "https://www.instagram.com/s.miyuu_proque/"}, "aira-shikano": {"instagram": "https://www.instagram.com/s.aira_proque/"}, "yuu-seto": {"instagram": "https://www.instagram.com/s.yu_proque/", "x": "https://x.com/u_numu"}, "saaya-takaki": {"x": "https://x.com/saaya_proque", "instagram": "https://www.instagram.com/t.saaya_proque/"}, "reika-takeuchi": {"instagram": "https://www.instagram.com/t.reika_proque/", "x": "https://x.com/rekachi_kawa"}, "neiro-tanaka": {"instagram": "https://www.instagram.com/t.neiro_proque/", "x": "https://x.com/ne1ro_t"}, "kohime-nozaki": {"x": "https://x.com/pr_hime_15", "instagram": "https://www.instagram.com/n.kohime_proque/"}, "nana-hashimoto": {"x": "https://x.com/u_lmi09", "tiktok": "https://www.tiktok.com/@mndjjt3", "instagram": "https://www.instagram.com/h.nana_proque/"}, "kaworu-hayashi": {"x": "https://x.com/kaworu_proque", "tiktok": "https://www.tiktok.com/@lav.iz7", "instagram": "https://www.instagram.com/h.kaworu_proque/"}, "nikoa-furuse": {"instagram": "https://www.instagram.com/f.nicoa_proque/", "x": "https://x.com/nicoakuma3"}, "aimi-horinouchi": {"tiktok": "https://www.tiktok.com/@aita_nya", "instagram": "https://www.instagram.com/h.aimi_proque/", "x": "https://x.com/ai_chu_zZ"}, "kaede-mori": {"instagram": "https://www.instagram.com/m.kaede_proque/"}, "miyabi-yamamoto": {"instagram": "https://www.instagram.com/y.miyabi_proque/"}, "amane-yunoki": {"instagram": "https://www.instagram.com/y.amane_proque/"}, "choko-yoshida": {"instagram": "https://www.instagram.com/y.choko_proque/", "x": "https://x.com/choko__Love__"}, "kaaya-yoneyama": {"x": "https://x.com/kaaya_proque", "tiktok": "https://www.tiktok.com/@y.kaaya_proque", "instagram": "https://www.instagram.com/y.kaaya_proque/"}, "fuuka-nagaike": {"instagram": "https://www.instagram.com/n.fuka_proque/", "x": "https://x.com/fuka____v"}, "arisu-kawamatsu": {"instagram": "https://www.instagram.com/k.arisu_proque/", "x": "https://x.com/arisu_proque"}};
+  const slugify = s => (s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+  const getName = () => (document.querySelector('#detailView .title')?.textContent || '').trim();
+
+  function svgInstagram(){return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2.2A2.8 2.8 0 1 0 12 15.8 2.8 2.8 0 0 0 12 9.2zM18.5 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>`; }
+  function svgX(){return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h4.6l5.1 7.5L17.9 3H21l-7.1 9.9L21.6 21H17l-5.5-7.9L6.2 21H3l7.9-11L3 3z"/></svg>`; }
+  function svgTikTok(){return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 3.1c1.1 1.5 2.5 2.5 4.4 2.7v3.1c-1.7-.1-3.2-.6-4.4-1.5v6.6c0 3.2-2.6 5.8-5.8 5.8S2.9 17.2 2.9 14s2.6-5.8 5.8-5.8c.3 0 .6 0 .9.1v3.2c-.3-.1-.6-.1-.9-.1-1.5 0-2.7 1.2-2.7 2.7S7.2 16.8 8.7 16.8s2.7-1.2 2.7-2.7V3.1h3.1z"/></svg>`; }
+
+  function socialsHTML(slug, name){
+    const s = SOCIALS[slug]; if(!s) return '';
+    const firstName = name.split(' ')[0] || name;
+    const a = [];
+    if (s.instagram) a.push(`<a class="sico" href="${s.instagram}" target="_blank" rel="noopener" aria-label="Instagram">${svgInstagram()}</a>`);
+    if (s.x)         a.push(`<a class="sico" href="${s.x}" target="_blank" rel="noopener" aria-label="Twitter / X">${svgX()}</a>`);
+    if (s.tiktok)    a.push(`<a class="sico" href="${s.tiktok}" target="_blank" rel="noopener" aria-label="TikTok">${svgTikTok()}</a>`);
+    return `<div class="socials-block">
+              <div class="socials-title">Follow ${firstName} here:</div>
+              <div class="socials">${a.join('')}</div>
+            </div>`;
+  }
+
+  function currentSlug(){
+    const m = (location.hash||'').match(/^#\/member\/([a-z0-9-]+)/);
+    if (m) return m[1];
+    const h1 = document.querySelector('#detailView .title'); 
+    return h1 ? slugify(h1.textContent.trim()) : null;
+  }
+
+  function ensureHeaderGrid(){
+    const header = document.querySelector('#detailView .headergrid') || document.querySelector('#detailView section:first-child');
+    if (header && !header.classList.contains('headergrid')) header.classList.add('headergrid');
+  }
+
+  function inject(){
+    const slug = currentSlug(); if(!slug) return;
+    ensureHeaderGrid();
+    const header = document.querySelector('#detailView .headergrid') || document.querySelector('#detailView section:first-child');
+    if (!header) return;
+    if (header.querySelector('.socials-block')) return; // already injected
+    const wrap = document.createElement('div');
+    wrap.innerHTML = socialsHTML(slug, getName());
+    if (wrap.firstElementChild) header.appendChild(wrap.firstElementChild);
+  }
+
+  const obs = new MutationObserver(()=>inject());
+  obs.observe(document.getElementById('detailView')||document.body, { childList:true, subtree:true });
+  window.addEventListener('hashchange', inject);
+  document.addEventListener('DOMContentLoaded', inject);
+  inject();
+})();
+</script>
 </body>
 </html>
